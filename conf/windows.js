@@ -101,16 +101,15 @@ function main(config) {
             "interval": 120,
             "tolerance": 200,
             "include-all": true,
-            "filter": "^(?!.*(美国)).*$",
+            "filter": "美国",
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
         },
-
         {
             ...groupBaseOption,
             "name": "直连",
             "type": "select",
             "proxies": ["DIRECT"],
-            "include-all": true,
+            "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg"
         }
     ];
@@ -123,7 +122,6 @@ function main(config) {
         config["proxies"].forEach(proxy => {
             // 为每个节点设置 udp = true
             proxy.udp = true
-
         })
     }
     // 返回修改后的配置
