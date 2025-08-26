@@ -86,6 +86,12 @@ const ruleProviders = {
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/gemini.txt",
         "path": "./ruleset/private/gemini.yaml"
     },
+    "github": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/github.txt",
+        "path": "./ruleset/private/github.yaml"
+    },
 };
 // 规则
 const rules = [
@@ -95,6 +101,7 @@ const rules = [
     "RULE-SET,google,AI",
     "RULE-SET,proxy,AI",
     "RULE-SET,gemini,AI",
+    "RULE-SET,github,AI",
     // 直连
     "MATCH,直连"
 ];
