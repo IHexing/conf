@@ -70,13 +70,13 @@ const ruleProviders = {
     },
     "google": {
         ...ruleProviderCommon,
-        "behavior": "classical",
+        "behavior": "domain",
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/google.txt",
         "path": "./ruleset/private/google.yaml"
     },
     "proxy": {
         ...ruleProviderCommon,
-        "behavior": "classical",
+        "behavior": "domain",
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/proxy.txt",
         "path": "./ruleset/private/proxy.yaml"
     },
