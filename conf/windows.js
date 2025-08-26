@@ -60,13 +60,13 @@ const ruleProviders = {
         ...ruleProviderCommon,
         "behavior": "classical",
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/ai.txt",
-        "path": "./ruleset/private/AI.yaml"
+        "path": "./ruleset/private/ai.yaml"
     },
     "youtube": {
         ...ruleProviderCommon,
         "behavior": "classical",
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/youtube.txt",
-        "path": "./ruleset/private/YouTube.yaml"
+        "path": "./ruleset/private/youtube.yaml"
     },
     "google": {
         ...ruleProviderCommon,
@@ -80,6 +80,12 @@ const ruleProviders = {
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/proxy.txt",
         "path": "./ruleset/private/proxy.yaml"
     },
+    "gemini": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/gemini.txt",
+        "path": "./ruleset/private/gemini.yaml"
+    },
 };
 // 规则
 const rules = [
@@ -88,6 +94,7 @@ const rules = [
     "RULE-SET,youtube,AI",
     "RULE-SET,google,AI",
     "RULE-SET,proxy,AI",
+    "RULE-SET,gemini,AI",
     // 直连
     "MATCH,直连"
 ];
