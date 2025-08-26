@@ -56,17 +56,38 @@ const ruleProviderCommon = {
 };
 // 规则集配置
 const ruleProviders = {
-    "AI": {
+    "ai": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/list/windows.txt",
-        "path": "./ruleset/ai/AI.yaml"
-    }
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/ai.txt",
+        "path": "./ruleset/private/AI.yaml"
+    },
+    "youtube": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/youtube.txt",
+        "path": "./ruleset/private/YouTube.yaml"
+    },
+    "google": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/google.txt",
+        "path": "./ruleset/private/google.yaml"
+    },
+    "proxy": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/proxy.txt",
+        "path": "./ruleset/private/proxy.yaml"
+    },
 };
 // 规则
 const rules = [
     // 代理
-    "RULE-SET,AI,AI",
+    "RULE-SET,ai,AI",
+    "RULE-SET,youtube,AI",
+    "RULE-SET,google,AI",
+    "RULE-SET,proxy,AI",
     // 直连
     "MATCH,直连"
 ];
