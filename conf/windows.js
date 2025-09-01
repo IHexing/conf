@@ -145,7 +145,7 @@ function main(config) {
             "interval": 120,
             "tolerance": 200,
             "include-all": true,
-            "filter": "美国",
+            "filter": "新加坡",
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
         },
         {
