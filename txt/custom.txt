@@ -1,6 +1,6 @@
 payload:
   - DOMAIN-KEYWORD,hello-shudong.com
-  # claude
+
   - DOMAIN-KEYWORD,a-api.anthropic.com
   - DOMAIN-KEYWORD,a-cdn.anthropic.com
   - DOMAIN-KEYWORD,api-iam.intercom.io
@@ -19,9 +19,9 @@ payload:
   - DOMAIN-KEYWORD,static.intercomassets.com
   - DOMAIN-KEYWORD,statsig.anthropic.com
   - DOMAIN-KEYWORD,widget.intercom.io
-  # maven
+
   - DOMAIN-KEYWORD,mvnrepository.com
-  #google
+
   - DOMAIN-KEYWORD,accounts.google.com
   - DOMAIN-KEYWORD,apis.google.com
   - DOMAIN-KEYWORD,fonts.gstatic.com
