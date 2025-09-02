@@ -1,2 +1,21 @@
 payload:
   - DOMAIN-KEYWORD,hello-shudong.com
+  - DOMAIN-KEYWORD,a-api.anthropic.com
+  - DOMAIN-KEYWORD,a-cdn.anthropic.com
+  - DOMAIN-KEYWORD,api-iam.intercom.io
+  - DOMAIN-KEYWORD,api.honeycomb.io
+  - DOMAIN-KEYWORD,claude.ai
+  - DOMAIN-KEYWORD,connect.facebook.net
+  - DOMAIN-KEYWORD,downloads.intercomcdn.com
+  - DOMAIN-KEYWORD,js.intercomcdn.com
+  - DOMAIN-KEYWORD,js.stripe.com
+  - DOMAIN-KEYWORD,m.stripe.com
+  - DOMAIN-KEYWORD,m.stripe.network
+  - DOMAIN-KEYWORD,messenger-apps.intercom.io
+  - DOMAIN-KEYWORD,nexus-websocket-a.intercom.io
+  - DOMAIN-KEYWORD,r.stripe.com
+  - DOMAIN-KEYWORD,s-cdn.anthropic.com
+  - DOMAIN-KEYWORD,static.intercomassets.com
+  - DOMAIN-KEYWORD,statsig.anthropic.com
+  - DOMAIN-KEYWORD,widget.intercom.io
+  - DOMAIN-KEYWORD,mvnrepository.com

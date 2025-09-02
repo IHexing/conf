@@ -140,6 +140,13 @@ function main(config) {
     config["proxy-groups"] = [
         {
             ...groupBaseOption,
+            "name": "节点选择",
+            "type": "select",
+            "include-all": true,
+            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
+        },
+        {
+            ...groupBaseOption,
             "name": "AI",
             "type": "url-test",
             "interval": 120,
