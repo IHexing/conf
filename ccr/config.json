@@ -1,0 +1,76 @@
+{
+  "LOG": false,
+  "LOG_LEVEL": "debug",
+  "CLAUDE_PATH": "",
+  "HOST": "127.0.0.1",
+  "PORT": 3456,
+  "APIKEY": "",
+  "API_TIMEOUT_MS": "600000",
+  "PROXY_URL": "",
+  "transformers": [],
+  "forceUseImageAgent": true,
+  "CUSTOM_ROUTER_PATH": "./custom-router.js",
+  "Providers": [
+    {
+      "name": "deepseek_chat",
+      "api_base_url": "http://127.0.0.1:8080/api/v3/defaults",
+      "api_key": "sk",
+      "models": ["deepseek_chat"],
+      "transformer": {"use": [["maxtoken",{"max_tokens": 65536}], "enhancetool"]}
+    },
+    {
+      "name": "background_chat",
+      "api_base_url": "http://127.0.0.1:8080/api/v3/background",
+      "api_key": "sk",
+      "models": ["background_chat"],
+      "transformer": {"use": [["maxtoken",{"max_tokens": 65536}], "enhancetool"]}
+    },
+    {
+      "name": "think_chat",
+      "api_base_url": "http://127.0.0.1:8080/api/v3/think",
+      "api_key": "sk",
+      "models": ["think_chat"],
+      "transformer": {"use": [["maxtoken",{"max_tokens": 65536}], "enhancetool"]}
+    },
+    {
+      "name": "longContext_chat",
+      "api_base_url": "http://127.0.0.1:8080/api/v3/longContext",
+      "api_key": "sk",
+      "models": ["longContext_chat"],
+      "transformer": {"use": [["maxtoken",{"max_tokens": 65536}], "enhancetool"]}
+    },
+    {
+      "name": "webSearch_chat",
+      "api_base_url": "http://127.0.0.1:8080/api/v3/webSearch",
+      "api_key": "sk",
+      "models": ["webSearch_chat"],
+      "transformer": {"use": [["maxtoken",{"max_tokens": 65536}], "enhancetool"]}
+    },
+    {
+      "name": "image_chat",
+      "api_base_url": "http://127.0.0.1:8080/api/v3/image",
+      "api_key": "sk",
+      "models": ["image_chat"],
+      "transformer": {"use": [["maxtoken",{"max_tokens": 65536}], "enhancetool"]}
+    }
+  ],
+  "StatusLine": {
+    "enabled": false,
+    "currentStyle": "default",
+    "default": {
+      "modules": []
+    },
+    "powerline": {
+      "modules": []
+    }
+  },
+  "Router": {
+    "default": "deepseek_chat",
+    "background": "background_chat",
+    "think": "think_chat",
+    "longContext": "longContext_chat",
+    "longContextThreshold": 60000,
+    "webSearch": "webSearch_chat",
+    "image": "image_chat"
+  }
+}
