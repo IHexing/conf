@@ -102,7 +102,7 @@ const ruleProviders = {
 // 规则
 const rules = [
     // 自定义规则
-    "DOMAIN-SUFFIX,mvnrepository.com,AI", // Google服务
+    "DOMAIN-SUFFIX,ngrok-free.app,AI", // ngrok服务
     // 代理
     "RULE-SET,ai,AI",
     "RULE-SET,youtube,AI",
