@@ -9,14 +9,13 @@
   "PROXY_URL": "",
   "transformers": [],
   "forceUseImageAgent": true,
-  "CUSTOM_ROUTER_PATH": "E:\\03-code\\03-gitee\\conf\\ccr\\custom-router.js",
   "Providers": [
     {
-      "name": "deepseek_chat",
+      "name": "defaults",
       "api_base_url": "http://127.0.0.1:8080/api/v3/defaults",
       "api_key": "sk",
-      "models": ["deepseek_chat"],
-      "transformer": {"use": [["maxtoken",{"max_tokens": 24000}], "enhancetool"]}
+      "models": ["defaults"],
+      "transformer": {"use": [["maxtoken",{"max_tokens": 24000}], "enhancetool","reasoning"]}
     },
     {
       "name": "background_chat",
@@ -65,7 +64,7 @@
     }
   },
   "Router": {
-    "default": "deepseek_chat",
+    "default": "defaults",
     "background": "background_chat",
     "think": "think_chat",
     "longContext": "longContext_chat",
