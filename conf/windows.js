@@ -98,6 +98,12 @@ const ruleProviders = {
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/custom.txt",
         "path": "./ruleset/private/custom.yaml"
     },
+    "microsoft": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Microsoft/Microsoft.list",
+        "path": "./ruleset/private/microsoft.yaml"
+    },
 };
 // 规则
 const rules = [

@@ -36,3 +36,8 @@ payload:
   - DOMAIN-KEYWORD,www.google.com
   - DOMAIN-KEYWORD,www.googletagmanager.com
   - DOMAIN-KEYWORD,www.gstatic.com
+
+  - DOMAIN-KEYWORD,lmarena.ai
+
+  - DOMAIN-KEYWORD,n8n.io
+  - DOMAIN-KEYWORD,n8n.cloud
