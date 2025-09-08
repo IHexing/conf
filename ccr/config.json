@@ -26,7 +26,7 @@
     },
     {
       "name": "think_chat",
-      "api_base_url": "http://127.0.0.1:8080/api/v3/think",
+      "api_base_url": "http://127.0.0.1:8080/api/v3/v1/messages",
       "api_key": "sk",
       "models": ["think_chat"],
       "transformer": {"use": [["maxtoken",{"max_tokens": 24000}], "anthropics"]}
