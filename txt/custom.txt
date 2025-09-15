@@ -41,3 +41,8 @@ payload:
 
   - DOMAIN-KEYWORD,n8n.io
   - DOMAIN-KEYWORD,n8n.cloud
+
+  - DOMAIN-KEYWORD,lmstudio.ai
+  - DOMAIN-KEYWORD,ollama.com
+  - DOMAIN-KEYWORD,cloudflarestorage.com
+  - DOMAIN-KEYWORD,videoscribe.co
