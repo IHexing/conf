@@ -45,4 +45,20 @@ payload:
   - DOMAIN-KEYWORD,lmstudio.ai
   - DOMAIN-KEYWORD,ollama.com
   - DOMAIN-KEYWORD,cloudflarestorage.com
-  - DOMAIN-KEYWORD,videoscribe.co
+
+  - DOMAIN-KEYWORD,ad.doubleclick.net
+  - DOMAIN-KEYWORD,api-eu.mixpanel.com
+  - DOMAIN-KEYWORD,api.hubapi.com
+  - DOMAIN-KEYWORD,api.hubspot.com
+  - DOMAIN-KEYWORD,cdn.optimizely.com
+  - DOMAIN-KEYWORD,cognito-idp.us-east-1.amazonaws.com
+  - DOMAIN-KEYWORD,content.hotjar.io
+  - DOMAIN-KEYWORD,cta-service-cms2.hubspot.com
+  - DOMAIN-KEYWORD,feedback.hubapi.com
+  - DOMAIN-KEYWORD,find.userpilot.io
+  - DOMAIN-KEYWORD,forms.hscollectedforms.net
+  - DOMAIN-KEYWORD,o116547.ingest.sentry.io
+  - DOMAIN-KEYWORD,px.ads.linkedin.com
+  - DOMAIN-KEYWORD,services.sparkol.com
+  - DOMAIN-KEYWORD,ssgtm.videoscribe.co
+  - DOMAIN-KEYWORD,www.videoscribe.co
