@@ -1,0 +1,11 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+__pycache__
+/agent_env
+
+
+.obsidian/**
+.specstory/**
