@@ -190,7 +190,7 @@ function main(config) {
             "name": "前置跳板",
             "type": "url-test",
             "interval": 120,
-            "tolerance": 200,
+            "tolerance": 50,
             "include-all": true,
             "filter": "美国",
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg"
