@@ -61,4 +61,13 @@ payload:
   - DOMAIN-KEYWORD,px.ads.linkedin.com
   - DOMAIN-KEYWORD,services.sparkol.com
   - DOMAIN-KEYWORD,ssgtm.videoscribe.co
-  - DOMAIN-KEYWORD,www.videoscribe.co
+  - DOMAIN-KEYWORD,videoscribe.co
+
+  - DOMAIN-SUFFIX,ngrok-free.app
+  - DOMAIN-SUFFIX,1key.me
+  - DOMAIN-SUFFIX,langchain.com
+  - DOMAIN-SUFFIX,cloudflare.com
+  - DOMAIN-SUFFIX,ipip.la
+  - DOMAIN-SUFFIX,ping0.cc
+  - DOMAIN-SUFFIX,hxlm.org
+  - DOMAIN-SUFFIX,webshare.io

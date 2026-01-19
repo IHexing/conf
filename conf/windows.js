@@ -109,11 +109,6 @@ const ruleProviders = {
 const rules = [
     // 自定义规则
     "DOMAIN-SUFFIX,ngrok-free.app,AI", // ngrok服务
-    "DOMAIN-SUFFIX,1key.me,AI",
-    "DOMAIN-SUFFIX,langchain.com,AI",
-    "DOMAIN-SUFFIX,cloudflare.com,AI",
-    "DOMAIN-SUFFIX,ipip.la,AI",
-    "DOMAIN-SUFFIX,ping0.cc,AI",
     // 代理
     "RULE-SET,ai,AI",
     "RULE-SET,youtube,AI",
@@ -147,31 +142,44 @@ function main(config) {
     // 静态住宅代理
     const staticProxyBase = {
         "type": "socks5",
-        "server": "123",
-        "port": 11,
-        "username": "11",
-        "password": "11",
+        "server": "223.",
+        "port": 22325,
+        "username": "",
+        "password": "",
         "udp": true
     };
 
-    // 1. 直连节点 (速度快，但可能被墙)
+    // 直连节点 (速度快，但可能被墙)
     const staticProxyDirect = {
         ...staticProxyBase,
         "name": "静态住宅 (直连)"
     };
 
-    // 2. 链式节点 (稳定，通过前置代理转发)
-    const staticProxyChain = {
+    // 链式节点 (稳定，通过前置代理转发)
+    const chainConfigs = [
+        {name: "前置跳板A", filter: "Pro-香港-BGP"},
+        {name: "前置跳板B", filter: "Pro-香港-BGP"},
+        {name: "前置跳板C", filter: "Pro-香港-BGP"},
+    ];
+    const generatedChainProxies = chainConfigs.map(item => ({
         ...staticProxyBase,
-        "name": "静态住宅 (链式)",
-        "dialer-proxy": "前置跳板"
-    };
+        "name": `静态住宅 (链式-${item.name.replace('前置跳板', '')})`,
+        "dialer-proxy": item.name
+    }));
+    const generatedProxyGroups = chainConfigs.map(item => ({
+        ...groupBaseOption,
+        "name": item.name,
+        "type": "select",
+        "include-all": true,
+        "filter": item.filter,
+        "icon": `https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg`
+    }));
 
     // 将静态代理添加到总节点列表中
     if (!Array.isArray(config.proxies)) {
         config.proxies = [];
     }
-    config.proxies.push(staticProxyDirect, staticProxyChain);
+    config.proxies.push(staticProxyDirect, ...generatedChainProxies);
 
     // 覆盖原配置中DNS配置
     config["dns"] = dnsConfig;
@@ -185,21 +193,13 @@ function main(config) {
             "include-all": true,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
         },
-        {
-            ...groupBaseOption,
-            "name": "前置跳板",
-            "type": "url-test",
-            "interval": 120,
-            "tolerance": 50,
-            "include-all": true,
-            "filter": "美国",
-            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg"
-        },
+        ...generatedProxyGroups,
         {
             ...groupBaseOption,
             "name": "AI",
-            "type": "select",
-            "proxies": [staticProxyDirect.name, staticProxyChain.name],
+            "type": "fallback",
+            "interval": 120,
+            "proxies": [staticProxyDirect.name, ...generatedChainProxies.map(p => p.name)],
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg"
         },
