@@ -156,11 +156,20 @@ function main(config) {
     };
 
     // 链式节点 (稳定，通过前置代理转发)
-    const chainConfigs = [
-        {name: "前置跳板A", filter: "Pro-香港-BGP"},
-        {name: "前置跳板B", filter: "Pro-香港-BGP"},
-        {name: "前置跳板C", filter: "Pro-香港-BGP"},
-    ];
+    // const chainConfigs = [
+    //     {name: "前置跳板A", filter: "日本"},
+    //     {name: "前置跳板B", filter: "香港"},
+    //     {name: "前置跳板C", filter: "美国"},
+    //     {name: "前置跳板D", filter: "新加坡"},
+    // ];
+    const chainConfigs = (config.proxies || []).map(p => {
+        const safeName = p.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return {
+            name: `前置跳板${p.name}`,
+            filter: `^${safeName}$`
+        };
+    });
+
     const generatedChainProxies = chainConfigs.map(item => ({
         ...staticProxyBase,
         "name": `静态住宅 (链式-${item.name.replace('前置跳板', '')})`,
@@ -193,16 +202,17 @@ function main(config) {
             "include-all": true,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/adjust.svg"
         },
-        ...generatedProxyGroups,
         {
             ...groupBaseOption,
             "name": "AI",
-            "type": "fallback",
+            "type": "url-test",
             "interval": 120,
+            "tolerance": 20,
             "proxies": [staticProxyDirect.name, ...generatedChainProxies.map(p => p.name)],
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg"
         },
+        ...generatedProxyGroups,
         {
             ...groupBaseOption,
             "name": "直连",
