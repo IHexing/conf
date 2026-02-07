@@ -71,3 +71,14 @@ payload:
   - DOMAIN-SUFFIX,ping0.cc
   - DOMAIN-SUFFIX,hxlm.org
   - DOMAIN-SUFFIX,webshare.io
+
+  - DOMAIN,services.sparkol.com,DIRECT
+  - DOMAIN,ecoservice.sparkol.com,DIRECT
+  - DOMAIN-SUFFIX,amazoncognito.com,DIRECT
+  - DOMAIN-KEYWORD,cognito-idp,DIRECT
+  - DOMAIN-SUFFIX,cloudfront.net,DIRECT
+  - DOMAIN-SUFFIX,s3.amazonaws.com,DIRECT
+  - DOMAIN-SUFFIX,s3.eu-west-1.amazonaws.com,DIRECT
+  - DOMAIN-SUFFIX,s3.eu-west-2.amazonaws.com,DIRECT
+  - DOMAIN-SUFFIX,sparkol.com,DIRECT
+  - DOMAIN-SUFFIX,videoscribe.co,DIRECT
