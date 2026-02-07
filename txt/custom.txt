@@ -59,9 +59,6 @@ payload:
   - DOMAIN-KEYWORD,forms.hscollectedforms.net
   - DOMAIN-KEYWORD,o116547.ingest.sentry.io
   - DOMAIN-KEYWORD,px.ads.linkedin.com
-  - DOMAIN-KEYWORD,services.sparkol.com
-  - DOMAIN-KEYWORD,ssgtm.videoscribe.co
-  - DOMAIN-KEYWORD,videoscribe.co
 
   - DOMAIN-SUFFIX,ngrok-free.app
   - DOMAIN-SUFFIX,1key.me
@@ -72,13 +69,9 @@ payload:
   - DOMAIN-SUFFIX,hxlm.org
   - DOMAIN-SUFFIX,webshare.io
 
-  - DOMAIN,services.sparkol.com,DIRECT
-  - DOMAIN,ecoservice.sparkol.com,DIRECT
-  - DOMAIN-SUFFIX,amazoncognito.com,DIRECT
-  - DOMAIN-KEYWORD,cognito-idp,DIRECT
-  - DOMAIN-SUFFIX,cloudfront.net,DIRECT
-  - DOMAIN-SUFFIX,s3.amazonaws.com,DIRECT
-  - DOMAIN-SUFFIX,s3.eu-west-1.amazonaws.com,DIRECT
-  - DOMAIN-SUFFIX,s3.eu-west-2.amazonaws.com,DIRECT
-  - DOMAIN-SUFFIX,sparkol.com,DIRECT
-  - DOMAIN-SUFFIX,videoscribe.co,DIRECT
+  - DOMAIN-SUFFIX,sparkol.com
+  - DOMAIN-SUFFIX,videoscribe.co
+  - DOMAIN-SUFFIX,amazoncognito.com
+  - DOMAIN-KEYWORD,cognito-idp
+  - DOMAIN-SUFFIX,cloudfront.net
+  - DOMAIN-SUFFIX,s3.amazonaws.com
