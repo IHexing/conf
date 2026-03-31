@@ -59,62 +59,64 @@ const ruleProviders = {
     "ai": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/ai.txt",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/ai.yaml",
         "path": "./ruleset/private/ai.yaml"
     },
     "youtube": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/youtube.txt",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/youtube.yaml",
         "path": "./ruleset/private/youtube.yaml"
+    },
+    "appleCnDirect": {
+        ...ruleProviderCommon,
+        "behavior": "domain",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/apple-cn-direct.yaml",
+        "path": "./ruleset/private/apple-cn-direct.yaml"
+    },
+    "appleComProxy": {
+        ...ruleProviderCommon,
+        "behavior": "domain",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/apple-com-proxy.yaml",
+        "path": "./ruleset/private/apple-com-proxy.yaml"
     },
     "google": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/google.txt",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/google.yaml",
         "path": "./ruleset/private/google.yaml"
     },
     "proxy": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/proxy.txt",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/proxy.yaml",
         "path": "./ruleset/private/proxy.yaml"
-    },
-    "gemini": {
-        ...ruleProviderCommon,
-        "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/gemini.txt",
-        "path": "./ruleset/private/gemini.yaml"
     },
     "github": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/github.txt",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/github.yaml",
         "path": "./ruleset/private/github.yaml"
     },
     "custom": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/txt/custom.txt",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/custom.yaml",
         "path": "./ruleset/private/custom.yaml"
-    },
-    "microsoft": {
-        ...ruleProviderCommon,
-        "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Microsoft/Microsoft.list",
-        "path": "./ruleset/private/microsoft.yaml"
     },
 };
 // 规则
 const rules = [
     // 自定义规则
-    "DOMAIN-SUFFIX,ngrok-free.app,AI", // ngrok服务
+    "DOMAIN-SUFFIX,example.com,AI", // 占位符: 真实自定义规则请维护到 windows-rules/custom.yaml
+    // Apple 路由
+    "RULE-SET,appleCnDirect,直连",
+    "RULE-SET,appleComProxy,AI",
     // 代理
     "RULE-SET,ai,AI",
     "RULE-SET,youtube,AI",
     "RULE-SET,google,AI",
     "RULE-SET,proxy,AI",
-    "RULE-SET,gemini,AI",
     "RULE-SET,github,AI",
     "RULE-SET,custom,AI",
     // 直连

@@ -1,0 +1,44 @@
+payload:
+  # Personal and self-hosted endpoints
+  - DOMAIN-KEYWORD,hello-shudong.com
+  - DOMAIN-SUFFIX,skillsmp.com
+
+  # Connectivity and tunnel helpers
+  - DOMAIN-SUFFIX,ipinfo.io
+  - DOMAIN-SUFFIX,ngrok-free.app
+  - DOMAIN-SUFFIX,ngrok.com
+
+  # Workflow and utility services
+  - DOMAIN-KEYWORD,mvnrepository.com
+  - DOMAIN-KEYWORD,n8n.cloud
+  - DOMAIN-KEYWORD,n8n.io
+  - DOMAIN-SUFFIX,1key.me
+  - DOMAIN-SUFFIX,cloudflare.com
+  - DOMAIN-SUFFIX,hxlm.org
+  - DOMAIN-SUFFIX,ipip.la
+  - DOMAIN-SUFFIX,ping0.cc
+  - DOMAIN-SUFFIX,webshare.io
+  - DOMAIN-KEYWORD,cloudflarestorage.com
+
+  # SaaS support and telemetry
+  - DOMAIN-KEYWORD,ad.doubleclick.net
+  - DOMAIN-KEYWORD,api-eu.mixpanel.com
+  - DOMAIN-KEYWORD,api.hubapi.com
+  - DOMAIN-KEYWORD,api.hubspot.com
+  - DOMAIN-KEYWORD,cdn.optimizely.com
+  - DOMAIN-KEYWORD,cognito-idp
+  - DOMAIN-KEYWORD,cognito-idp.us-east-1.amazonaws.com
+  - DOMAIN-KEYWORD,content.hotjar.io
+  - DOMAIN-KEYWORD,cta-service-cms2.hubspot.com
+  - DOMAIN-KEYWORD,feedback.hubapi.com
+  - DOMAIN-KEYWORD,find.userpilot.io
+  - DOMAIN-KEYWORD,forms.hscollectedforms.net
+  - DOMAIN-KEYWORD,o116547.ingest.sentry.io
+  - DOMAIN-KEYWORD,px.ads.linkedin.com
+  - DOMAIN-SUFFIX,amazoncognito.com
+  - DOMAIN-SUFFIX,cloudfront.net
+  - DOMAIN-SUFFIX,s3.amazonaws.com
+
+  # Other app-specific rules
+  - DOMAIN-SUFFIX,sparkol.com
+  - DOMAIN-SUFFIX,videoscribe.co

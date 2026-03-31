@@ -1,4 +1,19 @@
 payload:
+  # Explicit Google web endpoints referenced by the custom and Gemini workflows
+  - '+.accounts.google.com'
+  - '+.apis.google.com'
+  - '+.fonts.gstatic.com'
+  - '+.lh3.googleusercontent.com'
+  - '+.maps.googleapis.com'
+  - '+.ogads-pa.clients6.google.com'
+  - '+.play.google.com'
+  - '+.signaler-pa.clients6.google.com'
+  - '+.waa-pa.clients6.google.com'
+  - '+.www.google-analytics.com'
+  - '+.www.google.com'
+  - '+.www.googletagmanager.com'
+  - '+.www.gstatic.com'
+
   - '+.265.com'
   - '+.2mdn-cn.net'
   - '+.2mdn.net'

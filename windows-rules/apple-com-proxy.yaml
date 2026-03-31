@@ -1,0 +1,11 @@
+payload:
+  - '+.apple.com'
+  - '+.apple-cloudkit.com'
+  - '+.apple-dns.com'
+  - '+.apple-mapkit.com'
+  - '+.applemusic.com'
+  - '+.applestore.com'
+  - '+.appletv.com'
+  - '+.icloud.com'
+  - '+.icloud-content.com'
+  - '+.itunes.com'
