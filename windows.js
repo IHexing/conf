@@ -98,6 +98,12 @@ const ruleProviders = {
         "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/github.yaml",
         "path": "./ruleset/private/github.yaml"
     },
+    "canva": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/canva.yaml",
+        "path": "./ruleset/private/canva.yaml"
+    },
     "custom": {
         ...ruleProviderCommon,
         "behavior": "classical",
@@ -113,6 +119,7 @@ const rules = [
     "RULE-SET,appleCnDirect,直连",
     "RULE-SET,appleComProxy,AI",
     // 代理
+    "RULE-SET,canva,AI",
     "RULE-SET,ai,AI",
     "RULE-SET,youtube,AI",
     "RULE-SET,google,AI",

@@ -1,0 +1,16 @@
+payload:
+  # Canva standalone + ChatGPT Apps SDK (connect/resource domains)
+  # Sources: canva.dev MCP docs, OpenAI Canva app manifest, runtime logs
+  - DOMAIN-SUFFIX,canva.com
+  - DOMAIN-SUFFIX,canva.ai
+  - DOMAIN-SUFFIX,canva.xyz
+  - DOMAIN-SUFFIX,canva.dev
+  - DOMAIN-SUFFIX,canva-apps.com
+  # Auth / identity during Canva login in ChatGPT
+  - DOMAIN-SUFFIX,workos.com
+  - DOMAIN-SUFFIX,arena.ai
+  # Explicit high-traffic hosts (suffix rules above already match)
+  - DOMAIN,mcp.canva.com
+  - DOMAIN,design.canva.ai
+  - DOMAIN,openai.canva.com
+  - DOMAIN,openai.canva.xyz

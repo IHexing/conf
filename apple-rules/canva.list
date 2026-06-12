@@ -1,0 +1,15 @@
+# Generated from windows-rules/canva.yaml — do not edit by hand
+# Run: python scripts/sync_rule_sets.py
+# Canva + ChatGPT design — policy in apple.conf (HOME)
+
+DOMAIN-SUFFIX,canva.com
+DOMAIN-SUFFIX,canva.ai
+DOMAIN-SUFFIX,canva.xyz
+DOMAIN-SUFFIX,canva.dev
+DOMAIN-SUFFIX,canva-apps.com
+DOMAIN-SUFFIX,workos.com
+DOMAIN-SUFFIX,arena.ai
+DOMAIN,mcp.canva.com
+DOMAIN,design.canva.ai
+DOMAIN,openai.canva.com
+DOMAIN,openai.canva.xyz
