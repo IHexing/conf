@@ -113,8 +113,6 @@ const ruleProviders = {
 };
 // 规则
 const rules = [
-    // 自定义规则
-    "DOMAIN-SUFFIX,example.com,AI", // 占位符: 真实自定义规则请维护到 windows-rules/custom.yaml
     // Apple 路由
     "RULE-SET,appleCnDirect,直连",
     "RULE-SET,appleComProxy,AI",
@@ -149,10 +147,11 @@ function main(config) {
     }
 
     // 静态住宅代理
+    const staticResidentialServer = "69.3.";
     const staticProxyBase = {
         "type": "socks5",
-        "server": "223.",
-        "port": 22325,
+        "server": staticResidentialServer,
+        "port": 443,
         "username": "",
         "password": "",
         "udp": true
@@ -164,6 +163,14 @@ function main(config) {
         "name": "静态住宅 (直连)"
     };
 
+    // 只对订阅原始节点建链，跳过脚本已生成的静态住宅节点
+    const isSubscriptionProxy = (proxy) => {
+        if (!proxy?.name) return false;
+        if (proxy.name.startsWith("静态住宅")) return false;
+        if (proxy.type === "socks5" && proxy.server === staticResidentialServer) return false;
+        return true;
+    };
+
     // 链式节点 (稳定，通过前置代理转发)
     // const chainConfigs = [
     //     {name: "前置跳板A", filter: "日本"},
@@ -171,7 +178,8 @@ function main(config) {
     //     {name: "前置跳板C", filter: "美国"},
     //     {name: "前置跳板D", filter: "新加坡"},
     // ];
-    const chainConfigs = (config.proxies || []).map(p => {
+    const subscriptionProxies = (config.proxies || []).filter(isSubscriptionProxy);
+    const chainConfigs = subscriptionProxies.map(p => {
         const safeName = p.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         return {
             name: `前置跳板${p.name}`,
@@ -193,10 +201,15 @@ function main(config) {
         "icon": `https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg`
     }));
 
-    // 将静态代理添加到总节点列表中
+    // 将静态代理添加到总节点列表中（先移除同名节点，避免合并重复执行时 duplicate name）
     if (!Array.isArray(config.proxies)) {
         config.proxies = [];
     }
+    const newProxyNames = new Set([
+        staticProxyDirect.name,
+        ...generatedChainProxies.map(p => p.name),
+    ]);
+    config.proxies = config.proxies.filter(p => !newProxyNames.has(p.name));
     config.proxies.push(staticProxyDirect, ...generatedChainProxies);
 
     // 覆盖原配置中DNS配置
