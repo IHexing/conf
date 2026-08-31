@@ -116,6 +116,17 @@ const rules = [
     // Apple 路由
     "RULE-SET,appleCnDirect,直连",
     "RULE-SET,appleComProxy,AI",
+    "DOMAIN-SUFFIX,novproxy.com,AI",
+    "DOMAIN-SUFFIX,oyunfor.com,AI",
+    "DOMAIN-SUFFIX,iyzico.com,AI",
+    "DOMAIN-SUFFIX,chatgpt.site,AI",
+    "DOMAIN-SUFFIX,cc.cd,AI",
+    "DOMAIN-SUFFIX,miyaip.com,AI",
+    "DOMAIN-SUFFIX,iproyal.cn,AI",
+
+
+
+
     // 代理
     "RULE-SET,canva,AI",
     "RULE-SET,ai,AI",
@@ -147,20 +158,14 @@ function main(config) {
     }
 
     // 静态住宅代理
-    const staticResidentialServer = "69.3.";
+    const staticResidentialServer = "";
     const staticProxyBase = {
         "type": "socks5",
         "server": staticResidentialServer,
-        "port": 443,
+        "port": 8022,
         "username": "",
         "password": "",
         "udp": true
-    };
-
-    // 直连节点 (速度快，但可能被墙)
-    const staticProxyDirect = {
-        ...staticProxyBase,
-        "name": "静态住宅 (直连)"
     };
 
     // 只对订阅原始节点建链，跳过脚本已生成的静态住宅节点
@@ -171,46 +176,20 @@ function main(config) {
         return true;
     };
 
-    // 链式节点 (稳定，通过前置代理转发)
-    // const chainConfigs = [
-    //     {name: "前置跳板A", filter: "日本"},
-    //     {name: "前置跳板B", filter: "香港"},
-    //     {name: "前置跳板C", filter: "美国"},
-    //     {name: "前置跳板D", filter: "新加坡"},
-    // ];
     const subscriptionProxies = (config.proxies || []).filter(isSubscriptionProxy);
-    const chainConfigs = subscriptionProxies.map(p => {
-        const safeName = p.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        return {
-            name: `前置跳板${p.name}`,
-            filter: `^${safeName}$`
-        };
-    });
-
-    const generatedChainProxies = chainConfigs.map(item => ({
+    const generatedChainProxies = subscriptionProxies.map(p => ({
         ...staticProxyBase,
-        "name": `静态住宅 (链式-${item.name.replace('前置跳板', '')})`,
-        "dialer-proxy": item.name
-    }));
-    const generatedProxyGroups = chainConfigs.map(item => ({
-        ...groupBaseOption,
-        "name": item.name,
-        "type": "select",
-        "include-all": true,
-        "filter": item.filter,
-        "icon": `https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg`
+        "name": `静态住宅 (链式-${p.name})`,
+        "dialer-proxy": p.name
     }));
 
     // 将静态代理添加到总节点列表中（先移除同名节点，避免合并重复执行时 duplicate name）
     if (!Array.isArray(config.proxies)) {
         config.proxies = [];
     }
-    const newProxyNames = new Set([
-        staticProxyDirect.name,
-        ...generatedChainProxies.map(p => p.name),
-    ]);
+    const newProxyNames = new Set(generatedChainProxies.map(p => p.name));
     config.proxies = config.proxies.filter(p => !newProxyNames.has(p.name));
-    config.proxies.push(staticProxyDirect, ...generatedChainProxies);
+    config.proxies.push(...generatedChainProxies);
 
     // 覆盖原配置中DNS配置
     config["dns"] = dnsConfig;
@@ -230,11 +209,10 @@ function main(config) {
             "type": "url-test",
             "interval": 120,
             "tolerance": 20,
-            "proxies": [staticProxyDirect.name, ...generatedChainProxies.map(p => p.name)],
+            "proxies": generatedChainProxies.map(p => p.name),
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg"
         },
-        ...generatedProxyGroups,
         {
             ...groupBaseOption,
             "name": "直连",
