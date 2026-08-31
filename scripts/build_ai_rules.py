@@ -180,6 +180,9 @@ def parse_rules(text: str) -> list[str]:
         s = line.strip()
         if not s or s.startswith("#"):
             continue
+        # 仅排除 Claude 进程规则，避免 TUN 模式拦截本地 Claude Code (127.0.0.1)
+        if s.startswith("PROCESS-NAME,") and any(k in s.lower() for k in ("claude", "cowork-svc")):
+            continue
         if RULE_RE.match(s):
             rules.append(s)
     return rules
