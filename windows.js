@@ -55,59 +55,60 @@ const ruleProviderCommon = {
     "interval": 86400
 };
 // 规则集配置
+const cdnBase = "https://fastly.jsdelivr.net/gh/IHexing/conf@main/windows-rules";
 const ruleProviders = {
     "ai": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/ai.yaml",
+        "url": `${cdnBase}/ai.yaml`,
         "path": "./ruleset/private/ai.yaml"
     },
     "youtube": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/youtube.yaml",
+        "url": `${cdnBase}/youtube.yaml`,
         "path": "./ruleset/private/youtube.yaml"
     },
     "appleCnDirect": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/apple-cn-direct.yaml",
+        "url": `${cdnBase}/apple-cn-direct.yaml`,
         "path": "./ruleset/private/apple-cn-direct.yaml"
     },
     "appleComProxy": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/apple-com-proxy.yaml",
+        "url": `${cdnBase}/apple-com-proxy.yaml`,
         "path": "./ruleset/private/apple-com-proxy.yaml"
     },
     "google": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/google.yaml",
+        "url": `${cdnBase}/google.yaml`,
         "path": "./ruleset/private/google.yaml"
     },
     "proxy": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/proxy.yaml",
+        "url": `${cdnBase}/proxy.yaml`,
         "path": "./ruleset/private/proxy.yaml"
     },
     "github": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/github.yaml",
+        "url": `${cdnBase}/github.yaml`,
         "path": "./ruleset/private/github.yaml"
     },
     "canva": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/canva.yaml",
+        "url": `${cdnBase}/canva.yaml`,
         "path": "./ruleset/private/canva.yaml"
     },
     "custom": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": "https://raw.githubusercontent.com/IHexing/conf/refs/heads/main/windows-rules/custom.yaml",
+        "url": `${cdnBase}/custom.yaml`,
         "path": "./ruleset/private/custom.yaml"
     },
 };

@@ -16,6 +16,12 @@ payload:
   - DOMAIN-SUFFIX,sora.com
   - DOMAIN-KEYWORD,chatgpt-async-webps-prod
   - DOMAIN-KEYWORD,openai
+  - PROCESS-NAME,ChatGPT
+  - PROCESS-NAME,ChatGPT.exe
+  - PROCESS-NAME,Codex
+  - PROCESS-NAME,Codex.exe
+  - PROCESS-NAME,chatgpt
+  - PROCESS-NAME,codex
   - IP-CIDR,199.47.142.0/23,no-resolve
   - IP-CIDR,24.199.123.28/32,no-resolve
   - IP-CIDR,64.23.132.171/32,no-resolve
@@ -23,6 +29,7 @@ payload:
   - IP-ASN,401518,no-resolve
   - DOMAIN,browser-intake-datadoghq.com
   - DOMAIN,openai-api.arkoselabs.com
+  - DOMAIN,openaiassets.blob.core.windows.net
   - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net
   - DOMAIN,openaicomproductionae4b.blob.core.windows.net
   - DOMAIN,production-openaicom-storage.azureedge.net
@@ -30,6 +37,7 @@ payload:
   - DOMAIN-SUFFIX,algolia.net
   - DOMAIN-SUFFIX,api.statsig.com
   - DOMAIN-SUFFIX,auth0.com
+  - DOMAIN-SUFFIX,chatgpt.site
   - DOMAIN-SUFFIX,client-api.arkoselabs.com
   - DOMAIN-SUFFIX,events.statsigapi.net
   - DOMAIN-SUFFIX,featuregates.org
@@ -38,6 +46,7 @@ payload:
   - DOMAIN-SUFFIX,intercom.io
   - DOMAIN-SUFFIX,intercomcdn.com
   - DOMAIN-SUFFIX,launchdarkly.com
+  - DOMAIN-SUFFIX,oaistatsig.com
   - DOMAIN-SUFFIX,observeit.net
   - DOMAIN-SUFFIX,openai.com.cdn.cloudflare.net
   - DOMAIN-SUFFIX,segment.io
@@ -70,6 +79,11 @@ payload:
   - DOMAIN-SUFFIX,modelcontextprotocol.io
   - DOMAIN-SUFFIX,modelcontextprotocol.net
   - DOMAIN-SUFFIX,modelcontextprotocol.org
+  - PROCESS-NAME,Claude
+  - PROCESS-NAME,Claude.exe
+  - PROCESS-NAME,claude
+  - PROCESS-NAME,claude.exe
+  - PROCESS-NAME,cowork-svc.exe
   - IP-CIDR,160.79.104.0/21,no-resolve
   - IP-CIDR6,2607:6bc0::/32,no-resolve
   - IP-ASN,399358,no-resolve
@@ -112,6 +126,9 @@ payload:
   - DOMAIN-SUFFIX,generativelanguage.googleapis.com
   - DOMAIN-SUFFIX,notebooklm.google
   - DOMAIN-SUFFIX,notebooklm.google.com
+  - PROCESS-NAME,Antigravity
+  - PROCESS-NAME,Antigravity.exe
+  - PROCESS-NAME,antigravity
   - DOMAIN,alkalicore-pa.clients6.google.com
   - DOMAIN,alkalimakersuite-pa.clients6.google.com
   - DOMAIN,antigravity-pa.googleapis.com
@@ -126,6 +143,7 @@ payload:
   - DOMAIN-SUFFIX,aida.googleapis.com
   - DOMAIN-SUFFIX,aisandbox-pa.googleapis.com
   - DOMAIN-SUFFIX,antigravity-unleash.goog
+  - DOMAIN-SUFFIX,flow.google
   - DOMAIN-SUFFIX,geller-pa.googleapis.com
   - DOMAIN-SUFFIX,gemini.gstatic.com
   - DOMAIN-SUFFIX,jules.google
@@ -133,6 +151,7 @@ payload:
   - DOMAIN-SUFFIX,labs.google
   - DOMAIN-SUFFIX,labs.google.com
   - DOMAIN-SUFFIX,makersuite.google.com
+  - DOMAIN-SUFFIX,notebook.google.com
   - DOMAIN-SUFFIX,opal.google
   - DOMAIN-SUFFIX,opal.google.com
   - DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com
@@ -149,10 +168,12 @@ payload:
   # ===== xAI =====
   - DOMAIN-SUFFIX,grok.com
   - DOMAIN-SUFFIX,grok.x.com
+  - DOMAIN-SUFFIX,grokipedia.com
   - DOMAIN-SUFFIX,x.ai
 
   # ===== Meta AI =====
   - DOMAIN,ai.meta.com
+  - DOMAIN-SUFFIX,atmeta.com
   - DOMAIN-SUFFIX,llama.com
   - DOMAIN-SUFFIX,meta.ai
 
@@ -229,6 +250,9 @@ payload:
   - DOMAIN-SUFFIX,cursor.com
   - DOMAIN-SUFFIX,cursor.sh
   - DOMAIN-SUFFIX,cursorapi.com
+  - PROCESS-NAME,Cursor
+  - PROCESS-NAME,Cursor.exe
+  - PROCESS-NAME,cursor
 
   # ===== Zed =====
   - DOMAIN-SUFFIX,zed.dev
@@ -238,6 +262,9 @@ payload:
   - DOMAIN-SUFFIX,codeiumdata.com
   - DOMAIN-SUFFIX,windsurf.build
   - DOMAIN-SUFFIX,windsurf.com
+  - PROCESS-NAME,Windsurf
+  - PROCESS-NAME,Windsurf.exe
+  - PROCESS-NAME,windsurf
 
   # ===== JetBrains AI =====
   - DOMAIN-SUFFIX,grazie.ai
@@ -246,6 +273,9 @@ payload:
 
   # ===== Augment Code =====
   - DOMAIN-SUFFIX,augmentcode.com
+  - PROCESS-NAME,Augment
+  - PROCESS-NAME,Augment.exe
+  - PROCESS-NAME,augment
 
   # ===== Factory =====
   - DOMAIN-SUFFIX,factory.ai
