@@ -113,6 +113,14 @@ const ruleProviders = {
         "format": "yaml",
         "url": `${cdnBase}/apple-com-proxy.yaml`,
         "path": "./ruleset/private/apple-com-proxy.yaml"
+    },
+    // 7. 【你专属维护】私有国内直连白名单（公司业务、私有Git、内网开发）
+    "directCustom": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "format": "yaml",
+        "url": `${cdnBase}/direct-custom.yaml`,
+        "path": "./ruleset/private/direct-custom.yaml"
     }
 };
 
@@ -122,9 +130,11 @@ const rules = [
     "RULE-SET,reject,REJECT",
     "GEOSITE,category-ads-all,REJECT",
 
-    // 2. 【局域网与国内直连白名单】原生 GeoSite + 社区 direct 双保险
+    // 2. 【局域网与国内直连白名单】原生 GeoSite + 社区 direct + 私有直连三保险
     "GEOIP,private,直连,no-resolve",
     "RULE-SET,appleCnDirect,直连",
+    "RULE-SET,directCustom,直连",
+    "DOMAIN-SUFFIX,verytrading.com,直连", // 公司私有 Git / 业务秒开直连
     "GEOSITE,apple-cn,直连",
     "RULE-SET,direct,直连",
     "GEOSITE,cn,直连",

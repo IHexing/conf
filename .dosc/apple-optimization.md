@@ -84,13 +84,30 @@ flowchart TD
 1. [`apple.conf`](file:///e:/20_code/03_github/conf/apple.conf)：小火箭主配置文件，升级 DoH、REJECT-DROP、国内白名单与 Kill-Switch；
 2. [`apple-rules/apple-cn-direct.list`](file:///e:/20_code/03_github/conf/apple-rules/apple-cn-direct.list)：国区 Apple 直连清单（App Store、地图、天气）；
 3. [`apple-rules/apple-com-proxy.list`](file:///e:/20_code/03_github/conf/apple-rules/apple-com-proxy.list)：海外 Apple 与 iCloud 私密转送专线；
-4. [`apple-rules/custom.list`](file:///e:/20_code/03_github/conf/apple-rules/custom.list)：个人业务同步清单，新增 `novproxy`、`oyunfor`、`iyzico`、`muse.ai`；
-5. [`windows.js`](file:///e:/20_code/03_github/conf/windows.js) 与本地运行态 [`Script.js`](file:///C:/Users/H/AppData/Roaming/io.github.clash-verge-rev.clash-verge-rev/profiles/Script.js)：同步接入 `communityAi`（VPSDance 全家桶）与 `muse.ai` 直达；
-6. 瘦身清理：安全移除了已被废弃合并的 `canva.list`、`github.list`、`google.list`、`youtube.list`。
+4. [`apple-rules/custom.list`](file:///e:/20_code/03_github/conf/apple-rules/custom.list)：**【私有代理清单】**，收录海外业务、充值平台与新兴 AI（`novproxy`、`oyunfor`、`muse.ai` 等，走住宅）；
+5. [`apple-rules/direct-custom.list`](file:///e:/20_code/03_github/conf/apple-rules/direct-custom.list)：**【私有直连清单】**，收录国内私有服务器、公司 Git（`verytrading.com` 等，走直连）；
+6. [`windows-rules/direct-custom.yaml`](file:///e:/20_code/03_github/conf/windows-rules/direct-custom.yaml)：Windows 端同步的私有直连规则集；
+7. [`windows.js`](file:///e:/20_code/03_github/conf/windows.js) 与本地运行态 [`Script.js`](file:///C:/Users/H/AppData/Roaming/io.github.clash-verge-rev.clash-verge-rev/profiles/Script.js)：同步接入 `communityAi`（VPSDance 全家桶）、`directCustom` 直连与 `muse.ai` 代理；
+8. 瘦身清理：安全移除了已被废弃合并的 `canva.list`、`github.list`、`google.list`、`youtube.list`。
 
 ---
 
-## 📲 五、 小火箭客户端使用指南
+## 🧭 五、 日常私有域名维护指南（二分法心智模型）
+
+当您在日常开发中遇到新的私有域名时，只需按以下分类维护：
+
+* **如果属于「国内业务 / 私有基础设施」**（如公司 Git、自建国内 NAS、内网系统）：
+  * 电脑端：加入 [`windows-rules/direct-custom.yaml`](file:///e:/20_code/03_github/conf/windows-rules/direct-custom.yaml)
+  * 手机端：加入 [`apple-rules/direct-custom.list`](file:///e:/20_code/03_github/conf/apple-rules/direct-custom.list)
+  * 效果：毫秒级直连，不耗住宅流量，绝不卡死。
+* **如果属于「海外业务 / 海外充值 / 新兴小众 AI」**（如海外 API、住宅服务商、未收录 AI）：
+  * 电脑端：加入 [`windows-rules/custom.yaml`](file:///e:/20_code/03_github/conf/windows-rules/custom.yaml)
+  * 手机端：加入 [`apple-rules/custom.list`](file:///e:/20_code/03_github/conf/apple-rules/custom.list)
+  * 效果：强制锁定独享静态住宅出口，享受最高防封保障。
+
+---
+
+## 📲 六、 小火箭客户端使用指南
 
 1. **导入配置**：
    在 Shadowrocket 中，点击底部导航 **配置** -> 右上角 **+** -> 填入 `apple.conf` 的远程链接（或直接从剪贴板覆盖）。

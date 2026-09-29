@@ -22,7 +22,7 @@ DOMAIN-KEYWORD,mvnrepository.com
 DOMAIN-KEYWORD,n8n.cloud
 DOMAIN-KEYWORD,n8n.io
 
-# ===== 支付、海外充值与住宅代理平台 =====
+# ===== 支付、海外充值、订阅与住宅代理平台 =====
 DOMAIN-SUFFIX,novproxy.com
 DOMAIN-SUFFIX,oyunfor.com
 DOMAIN-SUFFIX,iyzico.com
@@ -31,9 +31,12 @@ DOMAIN-SUFFIX,cc.cd
 DOMAIN-SUFFIX,miyaip.com
 DOMAIN-SUFFIX,iproyal.cn
 DOMAIN-SUFFIX,dnshe.com
+DOMAIN-SUFFIX,revenuecat.com
+DOMAIN-SUFFIX,fastly-edge.com
 
-# ===== Canva 与新兴 AI 工具 (如 muse.ai) =====
+# ===== Canva 与新兴 AI 工具 (如 muse.ai, gushanai) =====
 DOMAIN-SUFFIX,muse.ai
+DOMAIN-SUFFIX,gushanai.com
 DOMAIN-SUFFIX,canva.com
 DOMAIN-SUFFIX,canva.ai
 DOMAIN-SUFFIX,canva.xyz

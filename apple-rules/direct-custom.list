@@ -1,0 +1,29 @@
+# Private Direct Rules — 公司与私有基础设施（走本地直连，不绕道海外住宅代理）
+# Policy assigned in apple.conf (DIRECT)
+
+# ===== 1. 公司与私有基础设施 =====
+DOMAIN-SUFFIX,verytrading.com
+
+# ===== 2. 金融支付与手机网银（防国外 IP 风控阻断、拒登） =====
+DOMAIN-SUFFIX,abchina.com
+DOMAIN-SUFFIX,ccb.com
+DOMAIN-SUFFIX,95516.com
+DOMAIN-SUFFIX,gsrcu.com
+DOMAIN-SUFFIX,jdpay.com
+DOMAIN-SUFFIX,wechatpay.cn
+
+# ===== 3. 国内生活出行与高频 App 业务 =====
+DOMAIN-SUFFIX,hikparking.com
+DOMAIN-SUFFIX,dianping.com
+DOMAIN-SUFFIX,lkcoffee.com
+DOMAIN-SUFFIX,luckincoffeecdn.com
+DOMAIN-SUFFIX,bus365.com
+DOMAIN-SUFFIX,ys7.com
+DOMAIN-SUFFIX,moji.com
+DOMAIN-SUFFIX,doubao.com
+
+# ===== 4. 国内底层通行认证与小程序网关 =====
+DOMAIN-SUFFIX,id6.me
+DOMAIN-SUFFIX,weixinbridge.com
+DOMAIN-SUFFIX,servicewechat.com
+DOMAIN-SUFFIX,wxgateway.com
