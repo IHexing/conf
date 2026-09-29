@@ -6,10 +6,9 @@ const domesticNameservers = [
 // 国外DNS服务器
 const foreignNameservers = [
     "https://208.67.222.222/dns-query", // OpenDNS
-    "https://77.88.8.8/dns-query", //YandexDNS
+    "https://77.88.8.8/dns-query", // YandexDNS
     "https://1.1.1.1/dns-query", // CloudflareDNS
-    "https://8.8.4.4/dns-query", // GoogleDNS
-
+    "https://8.8.4.4/dns-query" // GoogleDNS
 ];
 // DNS配置
 const dnsConfig = {
@@ -26,13 +25,13 @@ const dnsConfig = {
         // 本地主机/设备
         "+.lan",
         "+.local",
-        // // Windows网络出现小地球图标
+        // Windows网络出现小地球图标
         "+.msftconnecttest.com",
         "+.msftncsi.com",
         // QQ快速登录检测失败
         "localhost.ptlogin2.qq.com",
         "localhost.sec.qq.com",
-        // 追加以下条目
+        // 追加条目
         "+.in-addr.arpa",
         "+.ip6.arpa",
         "time.*.com",
@@ -41,8 +40,9 @@ const dnsConfig = {
         // 微信快速登录检测失败
         "localhost.work.weixin.qq.com"
     ],
-    "default-nameserver": ["223.5.5.5", "1.2.4.8"],//可修改成自己ISP的DNS
-    "nameserver": [...foreignNameservers],
+    "default-nameserver": ["223.5.5.5", "119.29.29.29"],
+    "direct-nameserver": [...domesticNameservers], // 必须：国内直连流量专用安全解析
+    "nameserver": [...domesticNameservers],
     "proxy-server-nameserver": [...domesticNameservers],
     "nameserver-policy": {
         "geosite:private,cn": domesticNameservers
@@ -51,71 +51,78 @@ const dnsConfig = {
 // 规则集通用配置
 const ruleProviderCommon = {
     "type": "http",
-    "format": "yaml",
     "interval": 86400
 };
-// 规则集配置
+
+// 规则集配置（私有定制源 CDN + 社区 Loyalsoldier 上游源）
 const cdnBase = "https://fastly.jsdelivr.net/gh/IHexing/conf@main/windows-rules";
+const loyalCdn = "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release";
+
 const ruleProviders = {
+    // 1. 【社区维护】全网广告与遥测拦截（每日自动更新，极大节省昂贵的住宅代理流量）
+    "reject": {
+        ...ruleProviderCommon,
+        "behavior": "domain",
+        "format": "text",
+        "url": `${loyalCdn}/reject.txt`,
+        "path": "./ruleset/community/reject.txt"
+    },
+    // 2. 【社区维护】国内直连白名单补充（每日自动更新，确保国内冷门网站直连不误入住宅）
+    "direct": {
+        ...ruleProviderCommon,
+        "behavior": "domain",
+        "format": "text",
+        "url": `${loyalCdn}/direct.txt`,
+        "path": "./ruleset/community/direct.txt"
+    },
+    // 3. 【你专属维护】大模型全家桶（已针对 Claude Code 做本地进程避让）
     "ai": {
         ...ruleProviderCommon,
         "behavior": "classical",
+        "format": "yaml",
         "url": `${cdnBase}/ai.yaml`,
         "path": "./ruleset/private/ai.yaml"
     },
-    "youtube": {
+    // 4. 【你专属维护】个人业务、Canva、海外支付采购平台
+    "custom": {
         ...ruleProviderCommon,
         "behavior": "classical",
-        "url": `${cdnBase}/youtube.yaml`,
-        "path": "./ruleset/private/youtube.yaml"
+        "format": "yaml",
+        "url": `${cdnBase}/custom.yaml`,
+        "path": "./ruleset/private/custom.yaml"
     },
+    // 5. 【你专属维护】Apple 国内直连与国外代理
     "appleCnDirect": {
         ...ruleProviderCommon,
         "behavior": "domain",
+        "format": "yaml",
         "url": `${cdnBase}/apple-cn-direct.yaml`,
         "path": "./ruleset/private/apple-cn-direct.yaml"
     },
     "appleComProxy": {
         ...ruleProviderCommon,
         "behavior": "domain",
+        "format": "yaml",
         "url": `${cdnBase}/apple-com-proxy.yaml`,
         "path": "./ruleset/private/apple-com-proxy.yaml"
-    },
-    "google": {
-        ...ruleProviderCommon,
-        "behavior": "domain",
-        "url": `${cdnBase}/google.yaml`,
-        "path": "./ruleset/private/google.yaml"
-    },
-    "proxy": {
-        ...ruleProviderCommon,
-        "behavior": "domain",
-        "url": `${cdnBase}/proxy.yaml`,
-        "path": "./ruleset/private/proxy.yaml"
-    },
-    "github": {
-        ...ruleProviderCommon,
-        "behavior": "classical",
-        "url": `${cdnBase}/github.yaml`,
-        "path": "./ruleset/private/github.yaml"
-    },
-    "canva": {
-        ...ruleProviderCommon,
-        "behavior": "classical",
-        "url": `${cdnBase}/canva.yaml`,
-        "path": "./ruleset/private/canva.yaml"
-    },
-    "custom": {
-        ...ruleProviderCommon,
-        "behavior": "classical",
-        "url": `${cdnBase}/custom.yaml`,
-        "path": "./ruleset/private/custom.yaml"
-    },
+    }
 };
-// 规则
+
+// 规则体系（四层漏斗架构：拦截 -> 国内放行 -> 专属业务与AI -> 全量断网兜底）
 const rules = [
-    // Apple 路由
+    // 1. 【去广告防追踪】社区源 + 内置库双重拦截，防隐私泄露并节省昂贵的住宅代理流量
+    "RULE-SET,reject,REJECT",
+    "GEOSITE,category-ads-all,REJECT",
+
+    // 2. 【局域网与国内直连白名单】原生 GeoSite + 社区 direct 双保险
+    "GEOIP,private,直连,no-resolve",
     "RULE-SET,appleCnDirect,直连",
+    "GEOSITE,apple-cn,直连",
+    "RULE-SET,direct,直连",
+    "GEOSITE,cn,直连",
+    "GEOIP,CN,直连,no-resolve",
+
+    // 3. 【用户自定义重点规则】Apple 海外代理 + 重点平台
     "RULE-SET,appleComProxy,AI",
     "DOMAIN-SUFFIX,novproxy.com,AI",
     "DOMAIN-SUFFIX,oyunfor.com,AI",
@@ -124,25 +131,20 @@ const rules = [
     "DOMAIN-SUFFIX,cc.cd,AI",
     "DOMAIN-SUFFIX,miyaip.com,AI",
     "DOMAIN-SUFFIX,iproyal.cn,AI",
+    "DOMAIN-SUFFIX,dnshe.com,AI",
 
-
-
-
-    // 代理
-    "RULE-SET,canva,AI",
-    "RULE-SET,ai,AI",
-    "RULE-SET,youtube,AI",
-    "RULE-SET,google,AI",
-    "RULE-SET,proxy,AI",
-    "RULE-SET,github,AI",
+    // 4. 【专属自定义业务与 AI 大模型】
     "RULE-SET,custom,AI",
-    // 直连
-    "MATCH,直连"
+    "RULE-SET,ai,AI",
+
+    // 5. 【核心 Kill-Switch 防御】未被国内白名单命中的全量外网流量 100% 进住宅代理；住宅故障立即全网断死！
+    "MATCH,AI"
 ];
+
 // 代理组通用配置
 const groupBaseOption = {
     "interval": 300,
-    "timeout": 3000,
+    "timeout": 5000,
     "url": "https://www.google.com/generate_204",
     "lazy": true,
     "max-failed-times": 3,
@@ -158,42 +160,61 @@ function main(config) {
         throw new Error("配置文件中未找到任何代理");
     }
 
-    // 静态住宅代理
-    const staticResidentialServer = "";
-    const staticProxyBase = {
-        "type": "socks5",
-        "server": staticResidentialServer,
-        "port": 8022,
-        "username": "",
-        "password": "",
-        "udp": true
-    };
+    // 静态住宅代理配置（GitHub 提交保持留空脱敏；本地运行时填入真实 IP/域名与凭据）
+    const residentialEndpoints = [
+        {
+            "label": "住宅",
+            "server": "",
+            "port": 443,
+            "username": "",
+            "password": ""
+        }
+    ];
 
-    // 只对订阅原始节点建链，跳过脚本已生成的静态住宅节点
-    const isSubscriptionProxy = (proxy) => {
+    const hasValidServer = residentialEndpoints.some(ep => Boolean(ep.server));
+    const residentialServers = new Set(residentialEndpoints.map(ep => ep.server).filter(Boolean));
+
+    // 只对有效订阅原始节点建链，跳过已生成的住宅节点并清洗机场虚假信息节点
+    const isCleanSubscriptionProxy = (proxy) => {
         if (!proxy?.name) return false;
-        if (proxy.name.startsWith("静态住宅")) return false;
-        if (proxy.type === "socks5" && proxy.server === staticResidentialServer) return false;
+        const name = String(proxy.name);
+        if (name.startsWith("静态住宅")) return false;
+        if (proxy.type === "socks5" && residentialServers.has(proxy.server)) return false;
+        // 彻底清洗到期时间、剩余流量、官网等提示性虚假节点，防止污染建链
+        if (/expire|traffic|sync|到期|剩余|流量|官网|更新|通知|倍率|网址|info/i.test(name)) return false;
         return true;
     };
 
-    const subscriptionProxies = (config.proxies || []).filter(isSubscriptionProxy);
-    const generatedChainProxies = subscriptionProxies.map(p => ({
-        ...staticProxyBase,
-        "name": `静态住宅 (链式-${p.name})`,
-        "dialer-proxy": p.name
-    }));
+    let generatedChainProxies = [];
+    if (hasValidServer && Array.isArray(config.proxies)) {
+        const subscriptionProxies = config.proxies.filter(isCleanSubscriptionProxy);
+        generatedChainProxies = residentialEndpoints.flatMap(ep =>
+            subscriptionProxies.map(p => ({
+                "type": "socks5",
+                "server": ep.server,
+                "port": ep.port,
+                "username": ep.username,
+                "password": ep.password,
+                "udp": true,
+                "name": `静态住宅-${ep.label} (链式-${p.name})`,
+                "dialer-proxy": p.name
+            }))
+        );
 
-    // 将静态代理添加到总节点列表中（先移除同名节点，避免合并重复执行时 duplicate name）
-    if (!Array.isArray(config.proxies)) {
-        config.proxies = [];
+        // 清理旧生成的住宅节点并追加新链式节点
+        config.proxies = config.proxies.filter(p => !(p?.name && String(p.name).startsWith("静态住宅")));
+        config.proxies.push(...generatedChainProxies);
     }
-    const newProxyNames = new Set(generatedChainProxies.map(p => p.name));
-    config.proxies = config.proxies.filter(p => !newProxyNames.has(p.name));
-    config.proxies.push(...generatedChainProxies);
 
-    // 覆盖原配置中DNS配置
+    // 强制关闭 IPv6，彻底杜绝 AAAA 记录绕过规则造成真实 IP 泄露
+    config["ipv6"] = false;
+    dnsConfig["ipv6"] = false;
     config["dns"] = dnsConfig;
+
+    // AI 代理列表安全回退（脱敏留空时回退为 DIRECT，避免内核启动时校验空节点崩溃）
+    const aiProxyList = generatedChainProxies.length > 0
+        ? generatedChainProxies.map(p => p.name)
+        : ["DIRECT"];
 
     // 覆盖原配置中的代理组
     config["proxy-groups"] = [
@@ -207,10 +228,8 @@ function main(config) {
         {
             ...groupBaseOption,
             "name": "AI",
-            "type": "url-test",
-            "interval": 120,
-            "tolerance": 20,
-            "proxies": generatedChainProxies.map(p => p.name),
+            "type": "fallback", // 锁定第一顺位优质跳板，存活绝不切节点；住宅全挂则彻底断网
+            "proxies": aiProxyList,
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg"
         },
@@ -227,14 +246,13 @@ function main(config) {
     // 覆盖原配置中的规则
     config["rule-providers"] = ruleProviders;
     config["rules"] = rules;
-    // 添加判断
+
+    // 为每个节点设置 udp = true，保障 WebRTC / UDP 代理正常
     if (config["proxies"]) {
         config["proxies"].forEach(proxy => {
-            // 为每个节点设置 udp = true
-            proxy.udp = true
-        })
+            proxy.udp = true;
+        });
     }
-    // 返回修改后的配置
-    return config;
 
+    return config;
 }

@@ -1,17 +1,12 @@
 payload:
-  # Personal and self-hosted endpoints
+  # ===== 自定义服务与个人端点 =====
   - DOMAIN-KEYWORD,hello-shudong.com
   - DOMAIN-SUFFIX,skillsmp.com
 
-  # Connectivity and tunnel helpers
+  # ===== 代理与连接工具 =====
   - DOMAIN-SUFFIX,ipinfo.io
   - DOMAIN-SUFFIX,ngrok-free.app
   - DOMAIN-SUFFIX,ngrok.com
-
-  # Workflow and utility services
-  - DOMAIN-KEYWORD,mvnrepository.com
-  - DOMAIN-KEYWORD,n8n.cloud
-  - DOMAIN-KEYWORD,n8n.io
   - DOMAIN-SUFFIX,1key.me
   - DOMAIN-SUFFIX,cloudflare.com
   - DOMAIN-SUFFIX,hxlm.org
@@ -20,7 +15,35 @@ payload:
   - DOMAIN-SUFFIX,webshare.io
   - DOMAIN-KEYWORD,cloudflarestorage.com
 
-  # SaaS support and telemetry
+  # ===== 工作流与开发组件 =====
+  - DOMAIN-KEYWORD,mvnrepository.com
+  - DOMAIN-KEYWORD,n8n.cloud
+  - DOMAIN-KEYWORD,n8n.io
+
+  # ===== 支付、海外充值与住宅代理平台 =====
+  - DOMAIN-SUFFIX,novproxy.com
+  - DOMAIN-SUFFIX,oyunfor.com
+  - DOMAIN-SUFFIX,iyzico.com
+  - DOMAIN-SUFFIX,chatgpt.site
+  - DOMAIN-SUFFIX,cc.cd
+  - DOMAIN-SUFFIX,miyaip.com
+  - DOMAIN-SUFFIX,iproyal.cn
+  - DOMAIN-SUFFIX,dnshe.com
+
+  # ===== Canva 与 ChatGPT 插件联动 =====
+  - DOMAIN-SUFFIX,canva.com
+  - DOMAIN-SUFFIX,canva.ai
+  - DOMAIN-SUFFIX,canva.xyz
+  - DOMAIN-SUFFIX,canva.dev
+  - DOMAIN-SUFFIX,canva-apps.com
+  - DOMAIN-SUFFIX,workos.com
+  - DOMAIN-SUFFIX,arena.ai
+  - DOMAIN,mcp.canva.com
+  - DOMAIN,design.canva.ai
+  - DOMAIN,openai.canva.com
+  - DOMAIN,openai.canva.xyz
+
+  # ===== SaaS 支持与遥测 =====
   - DOMAIN-KEYWORD,ad.doubleclick.net
   - DOMAIN-KEYWORD,api-eu.mixpanel.com
   - DOMAIN-KEYWORD,api.hubapi.com
@@ -39,6 +62,6 @@ payload:
   - DOMAIN-SUFFIX,cloudfront.net
   - DOMAIN-SUFFIX,s3.amazonaws.com
 
-  # Other app-specific rules
+  # ===== 特定应用规则 =====
   - DOMAIN-SUFFIX,sparkol.com
   - DOMAIN-SUFFIX,videoscribe.co
