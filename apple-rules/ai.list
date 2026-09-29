@@ -140,6 +140,7 @@ DOMAIN-SUFFIX,aida.googleapis.com
 DOMAIN-SUFFIX,aisandbox-pa.googleapis.com
 DOMAIN-SUFFIX,antigravity-unleash.goog
 DOMAIN-SUFFIX,flow.google
+DOMAIN-SUFFIX,flow.google.com
 DOMAIN-SUFFIX,geller-pa.googleapis.com
 DOMAIN-SUFFIX,gemini.gstatic.com
 DOMAIN-SUFFIX,jules.google
@@ -147,6 +148,7 @@ DOMAIN-SUFFIX,jules.google.com
 DOMAIN-SUFFIX,labs.google
 DOMAIN-SUFFIX,labs.google.com
 DOMAIN-SUFFIX,makersuite.google.com
+DOMAIN-SUFFIX,notebook.google
 DOMAIN-SUFFIX,notebook.google.com
 DOMAIN-SUFFIX,opal.google
 DOMAIN-SUFFIX,opal.google.com
@@ -168,9 +170,14 @@ DOMAIN-SUFFIX,grokipedia.com
 DOMAIN-SUFFIX,x.ai
 
 # ===== Meta AI =====
+DOMAIN,ai.developer.meta.com
 DOMAIN,ai.meta.com
+DOMAIN,aidemos.meta.com
+DOMAIN,developer.meta.com
+DOMAIN,llama.developer.meta.com
 DOMAIN-SUFFIX,atmeta.com
 DOMAIN-SUFFIX,llama.com
+DOMAIN-SUFFIX,llamameta.net
 DOMAIN-SUFFIX,meta.ai
 
 # ===== Mistral AI =====
@@ -451,6 +458,7 @@ DOMAIN-SUFFIX,cerebras.ai
 DOMAIN-SUFFIX,chutes.ai
 
 # ===== Cloudflare AI =====
+DOMAIN,api.cloudflare.com
 DOMAIN-SUFFIX,ai.cloudflare.com
 
 # ===== Perplexity =====

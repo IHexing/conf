@@ -30,7 +30,8 @@ payload:
   - DOMAIN-SUFFIX,iproyal.cn
   - DOMAIN-SUFFIX,dnshe.com
 
-  # ===== Canva 与 ChatGPT 插件联动 =====
+  # ===== Canva 与新兴 AI 工具 (如 muse.ai) =====
+  - DOMAIN-SUFFIX,muse.ai
   - DOMAIN-SUFFIX,canva.com
   - DOMAIN-SUFFIX,canva.ai
   - DOMAIN-SUFFIX,canva.xyz

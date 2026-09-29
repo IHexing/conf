@@ -75,7 +75,15 @@ const ruleProviders = {
         "url": `${loyalCdn}/direct.txt`,
         "path": "./ruleset/community/direct.txt"
     },
-    // 3. 【你专属维护】大模型全家桶（已针对 Claude Code 做本地进程避让）
+    // 3. 【社区维护】AI 大模型全家桶（VPSDance 每日自动更新，涵盖 100+ 全球主流 AI 服务）
+    "communityAi": {
+        ...ruleProviderCommon,
+        "behavior": "classical",
+        "format": "yaml",
+        "url": "https://fastly.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/all.yaml",
+        "path": "./ruleset/community/ai-all.yaml"
+    },
+    // 4. 【你专属维护】大模型全家桶（已针对 Claude Code 做本地进程避让）
     "ai": {
         ...ruleProviderCommon,
         "behavior": "classical",
@@ -83,7 +91,7 @@ const ruleProviders = {
         "url": `${cdnBase}/ai.yaml`,
         "path": "./ruleset/private/ai.yaml"
     },
-    // 4. 【你专属维护】个人业务、Canva、海外支付采购平台
+    // 5. 【你专属维护】个人业务、Canva、海外支付采购平台
     "custom": {
         ...ruleProviderCommon,
         "behavior": "classical",
@@ -91,7 +99,7 @@ const ruleProviders = {
         "url": `${cdnBase}/custom.yaml`,
         "path": "./ruleset/private/custom.yaml"
     },
-    // 5. 【你专属维护】Apple 国内直连与国外代理
+    // 6. 【你专属维护】Apple 国内直连与国外代理
     "appleCnDirect": {
         ...ruleProviderCommon,
         "behavior": "domain",
@@ -132,8 +140,11 @@ const rules = [
     "DOMAIN-SUFFIX,miyaip.com,AI",
     "DOMAIN-SUFFIX,iproyal.cn,AI",
     "DOMAIN-SUFFIX,dnshe.com,AI",
+    "DOMAIN-SUFFIX,muse.ai,AI",
 
-    // 4. 【专属自定义业务与 AI 大模型】
+    // 4. 【专属自定义业务与 AI 大模型】社区每日更新 + 原生 GeoSite + 私有强化三保险
+    "RULE-SET,communityAi,AI",
+    "GEOSITE,category-ai-chat-!cn,AI",
     "RULE-SET,custom,AI",
     "RULE-SET,ai,AI",
 

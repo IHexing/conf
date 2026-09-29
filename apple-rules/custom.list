@@ -1,15 +1,14 @@
-# Generated from windows-rules/custom.yaml — do not edit by hand
-# Run: python scripts/sync_rule_sets.py
+# Custom Rules — 同步自 windows-rules/custom.yaml
 # Policy assigned in apple.conf (HOME)
 
+# ===== 自定义服务与个人端点 =====
 DOMAIN-KEYWORD,hello-shudong.com
 DOMAIN-SUFFIX,skillsmp.com
+
+# ===== 代理与连接工具 =====
 DOMAIN-SUFFIX,ipinfo.io
 DOMAIN-SUFFIX,ngrok-free.app
 DOMAIN-SUFFIX,ngrok.com
-DOMAIN-KEYWORD,mvnrepository.com
-DOMAIN-KEYWORD,n8n.cloud
-DOMAIN-KEYWORD,n8n.io
 DOMAIN-SUFFIX,1key.me
 DOMAIN-SUFFIX,cloudflare.com
 DOMAIN-SUFFIX,hxlm.org
@@ -17,6 +16,37 @@ DOMAIN-SUFFIX,ipip.la
 DOMAIN-SUFFIX,ping0.cc
 DOMAIN-SUFFIX,webshare.io
 DOMAIN-KEYWORD,cloudflarestorage.com
+
+# ===== 工作流与开发组件 =====
+DOMAIN-KEYWORD,mvnrepository.com
+DOMAIN-KEYWORD,n8n.cloud
+DOMAIN-KEYWORD,n8n.io
+
+# ===== 支付、海外充值与住宅代理平台 =====
+DOMAIN-SUFFIX,novproxy.com
+DOMAIN-SUFFIX,oyunfor.com
+DOMAIN-SUFFIX,iyzico.com
+DOMAIN-SUFFIX,chatgpt.site
+DOMAIN-SUFFIX,cc.cd
+DOMAIN-SUFFIX,miyaip.com
+DOMAIN-SUFFIX,iproyal.cn
+DOMAIN-SUFFIX,dnshe.com
+
+# ===== Canva 与新兴 AI 工具 (如 muse.ai) =====
+DOMAIN-SUFFIX,muse.ai
+DOMAIN-SUFFIX,canva.com
+DOMAIN-SUFFIX,canva.ai
+DOMAIN-SUFFIX,canva.xyz
+DOMAIN-SUFFIX,canva.dev
+DOMAIN-SUFFIX,canva-apps.com
+DOMAIN-SUFFIX,workos.com
+DOMAIN-SUFFIX,arena.ai
+DOMAIN,mcp.canva.com
+DOMAIN,design.canva.ai
+DOMAIN,openai.canva.com
+DOMAIN,openai.canva.xyz
+
+# ===== SaaS 支持与遥测 =====
 DOMAIN-KEYWORD,ad.doubleclick.net
 DOMAIN-KEYWORD,api-eu.mixpanel.com
 DOMAIN-KEYWORD,api.hubapi.com

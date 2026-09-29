@@ -1,0 +1,11 @@
+# Apple Global Proxy — 境外 Apple 服务与 iCloud 私密转送专线
+DOMAIN-SUFFIX,apple.com
+DOMAIN-SUFFIX,apple-cloudkit.com
+DOMAIN-SUFFIX,apple-dns.com
+DOMAIN-SUFFIX,apple-mapkit.com
+DOMAIN-SUFFIX,applemusic.com
+DOMAIN-SUFFIX,applestore.com
+DOMAIN-SUFFIX,appletv.com
+DOMAIN-SUFFIX,icloud.com
+DOMAIN-SUFFIX,icloud-content.com
+DOMAIN-SUFFIX,itunes.com
