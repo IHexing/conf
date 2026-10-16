@@ -3,13 +3,7 @@ const domesticNameservers = [
     "https://223.5.5.5/dns-query", // 阿里DoH
     "https://doh.pub/dns-query" // 腾讯DoH
 ];
-// 国外DNS服务器
-const foreignNameservers = [
-    "https://208.67.222.222/dns-query", // OpenDNS
-    "https://77.88.8.8/dns-query", // YandexDNS
-    "https://1.1.1.1/dns-query", // CloudflareDNS
-    "https://8.8.4.4/dns-query" // GoogleDNS
-];
+
 // DNS配置
 const dnsConfig = {
     "enable": true,
@@ -134,28 +128,18 @@ const rules = [
     "GEOIP,private,直连,no-resolve",
     "RULE-SET,appleCnDirect,直连",
     "RULE-SET,directCustom,直连",
-    "DOMAIN-SUFFIX,verytrading.com,直连", // 公司私有 Git / 业务秒开直连
     "GEOSITE,apple-cn,直连",
     "RULE-SET,direct,直连",
     "GEOSITE,cn,直连",
     "GEOIP,CN,直连,no-resolve",
 
-    // 3. 【用户自定义重点规则】Apple 海外代理 + 重点平台
+    // 3. 【专属业务与 Apple 海外服务】
     "RULE-SET,appleComProxy,AI",
-    "DOMAIN-SUFFIX,novproxy.com,AI",
-    "DOMAIN-SUFFIX,oyunfor.com,AI",
-    "DOMAIN-SUFFIX,iyzico.com,AI",
-    "DOMAIN-SUFFIX,chatgpt.site,AI",
-    "DOMAIN-SUFFIX,cc.cd,AI",
-    "DOMAIN-SUFFIX,miyaip.com,AI",
-    "DOMAIN-SUFFIX,iproyal.cn,AI",
-    "DOMAIN-SUFFIX,dnshe.com,AI",
-    "DOMAIN-SUFFIX,muse.ai,AI",
+    "RULE-SET,custom,AI",
 
     // 4. 【专属自定义业务与 AI 大模型】社区每日更新 + 原生 GeoSite + 私有强化三保险
     "RULE-SET,communityAi,AI",
     "GEOSITE,category-ai-chat-!cn,AI",
-    "RULE-SET,custom,AI",
     "RULE-SET,ai,AI",
 
     // 5. 【核心 Kill-Switch 防御】未被国内白名单命中的全量外网流量 100% 进住宅代理；住宅故障立即全网断死！
@@ -184,10 +168,11 @@ function main(config) {
     // 静态住宅代理配置（GitHub 提交保持留空脱敏；本地运行时填入真实 IP/域名与凭据）
     const residentialEndpoints = [
         {
-            "label": "住宅",
+            "label": "加州AT&T独享",
+            "type": "ss",
             "server": "",
-            "port": 443,
-            "username": "",
+            "port": 22465,
+            "cipher": "2022-blake3-aes-256-gcm",
             "password": ""
         }
     ];
@@ -195,14 +180,17 @@ function main(config) {
     const hasValidServer = residentialEndpoints.some(ep => Boolean(ep.server));
     const residentialServers = new Set(residentialEndpoints.map(ep => ep.server).filter(Boolean));
 
-    // 只对有效订阅原始节点建链，跳过已生成的住宅节点并清洗机场虚假信息节点
+    // 清理机场所有的到期时间、剩余流量等虚假节点，防止污染所有节点与全局模式
+    if (Array.isArray(config.proxies)) {
+        config.proxies = config.proxies.filter(p => !(/expire|traffic|sync|到期|剩余|流量|官网|更新|通知|倍率|网址|info/i.test(String(p?.name))));
+    }
+
+    // 只对有效订阅原始节点建链，跳过已生成的住宅节点
     const isCleanSubscriptionProxy = (proxy) => {
         if (!proxy?.name) return false;
         const name = String(proxy.name);
-        if (name.startsWith("静态住宅")) return false;
-        if (proxy.type === "socks5" && residentialServers.has(proxy.server)) return false;
-        // 彻底清洗到期时间、剩余流量、官网等提示性虚假节点，防止污染建链
-        if (/expire|traffic|sync|到期|剩余|流量|官网|更新|通知|倍率|网址|info/i.test(name)) return false;
+        if (name.startsWith("静态住宅") || name.startsWith("加州AT&T")) return false;
+        if ((proxy.type === "socks5" || proxy.type === "ss") && residentialServers.has(proxy.server)) return false;
         return true;
     };
 
@@ -211,10 +199,10 @@ function main(config) {
         const subscriptionProxies = config.proxies.filter(isCleanSubscriptionProxy);
         generatedChainProxies = residentialEndpoints.flatMap(ep =>
             subscriptionProxies.map(p => ({
-                "type": "socks5",
+                "type": ep.type || "ss",
                 "server": ep.server,
                 "port": ep.port,
-                "username": ep.username,
+                "cipher": ep.cipher,
                 "password": ep.password,
                 "udp": true,
                 "name": `静态住宅-${ep.label} (链式-${p.name})`,
@@ -222,8 +210,21 @@ function main(config) {
             }))
         );
 
+        // 优先将低延迟的美西节点排在最前（首选 BGP-08、BGP-07 等优质节点，保障 fallback 始终优先使用最快节点）
+        const getProxyPriority = (name) => {
+            if (/美国-BGP-08/i.test(name)) return 1;
+            if (/美国-BGP-07/i.test(name)) return 2;
+            if (/美国-BGP-05/i.test(name)) return 3;
+            if (/美国-BGP/i.test(name)) return 4;
+            if (/美国/i.test(name)) return 5;
+            if (/香港|HK/i.test(name)) return 6;
+            if (/日本|JP/i.test(name)) return 7;
+            return 10;
+        };
+        generatedChainProxies.sort((a, b) => getProxyPriority(a.name) - getProxyPriority(b.name));
+
         // 清理旧生成的住宅节点并追加新链式节点
-        config.proxies = config.proxies.filter(p => !(p?.name && String(p.name).startsWith("静态住宅")));
+        config.proxies = config.proxies.filter(p => !(p?.name && (String(p.name).startsWith("静态住宅") || String(p.name).startsWith("加州AT&T"))));
         config.proxies.push(...generatedChainProxies);
     }
 
@@ -232,7 +233,7 @@ function main(config) {
     dnsConfig["ipv6"] = false;
     config["dns"] = dnsConfig;
 
-    // AI 代理列表安全回退（脱敏留空时回退为 DIRECT，避免内核启动时校验空节点崩溃）
+    // AI 代理列表：包含按延迟优选排序的链式节点（脱敏留空时回退为 DIRECT）
     const aiProxyList = generatedChainProxies.length > 0
         ? generatedChainProxies.map(p => p.name)
         : ["DIRECT"];
@@ -249,7 +250,7 @@ function main(config) {
         {
             ...groupBaseOption,
             "name": "AI",
-            "type": "fallback", // 锁定第一顺位优质跳板，存活绝不切节点；住宅全挂则彻底断网
+            "type": "fallback",
             "proxies": aiProxyList,
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg"
@@ -268,7 +269,7 @@ function main(config) {
     config["rule-providers"] = ruleProviders;
     config["rules"] = rules;
 
-    // 为每个节点设置 udp = true，保障 WebRTC / UDP 代理正常
+    // 为所有节点（包含住宅与机场节点）设置 udp = true，保障 WebRTC 与 UDP 转发全面通畅
     if (config["proxies"]) {
         config["proxies"].forEach(proxy => {
             proxy.udp = true;

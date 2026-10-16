@@ -7,6 +7,10 @@ payload:
   - DOMAIN-SUFFIX,chat.com
   - DOMAIN-SUFFIX,chatgpt.com
   - DOMAIN-SUFFIX,chatgpt.livekit.cloud
+  - DOMAIN-SUFFIX,livekit.cloud
+  - DOMAIN-SUFFIX,livekit.io
+  - DOMAIN-KEYWORD,livekit
+  - DOMAIN,stun.l.google.com
   - DOMAIN-SUFFIX,crixet.com
   - DOMAIN-SUFFIX,oaistatic.com
   - DOMAIN-SUFFIX,oaiusercontent.com

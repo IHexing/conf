@@ -25,3 +25,22 @@ payload:
   - DOMAIN-SUFFIX,weixinbridge.com
   - DOMAIN-SUFFIX,servicewechat.com
   - DOMAIN-SUFFIX,wxgateway.com
+
+  # ===== 5. 国内高频音视频流媒体与 P2P 穿透（防止误入不支持 UDP 的住宅代理） =====
+  - DOMAIN-SUFFIX,bilibili.com
+  - DOMAIN-SUFFIX,bilivideo.com
+  - DOMAIN-SUFFIX,bilivideo.cn
+  - DOMAIN-SUFFIX,hdslb.com
+  - DOMAIN-SUFFIX,biliapi.net
+  - DOMAIN-SUFFIX,biliapi.com
+  - DOMAIN-SUFFIX,netease.com
+  - DOMAIN-SUFFIX,163.com
+  - DOMAIN-SUFFIX,126.net
+
+  # ===== 6. 系统底层服务与高精度时钟校准 =====
+  - DOMAIN,time.apple.com
+
+  # ===== 7. 国内招投标与特定业务直连 =====
+  - DOMAIN-SUFFIX,xiquebiaoshu.com
+  - DOMAIN-SUFFIX,taitoubiao.com
+
