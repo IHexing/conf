@@ -1,7 +1,13 @@
-// 国内DNS服务器
+// 国内DNS服务器（直连解析）
 const domesticNameservers = [
     "https://223.5.5.5/dns-query", // 阿里DoH
     "https://doh.pub/dns-query" // 腾讯DoH
+];
+
+// 海外安全DNS服务器（代理与外网解析，防DNS污染及STUN/WebRTC国内解析穿透）
+const foreignNameservers = [
+    "https://1.1.1.1/dns-query", // Cloudflare DoH
+    "https://8.8.8.8/dns-query"  // Google DoH
 ];
 
 // DNS配置
@@ -36,8 +42,8 @@ const dnsConfig = {
     ],
     "default-nameserver": ["223.5.5.5", "119.29.29.29"],
     "direct-nameserver": [...domesticNameservers], // 必须：国内直连流量专用安全解析
-    "nameserver": [...domesticNameservers],
-    "proxy-server-nameserver": [...domesticNameservers],
+    "nameserver": [...foreignNameservers],        // 默认及代理规则走海外安全解析，彻底防泄露
+    "proxy-server-nameserver": [...domesticNameservers], // 代理节点自身域名解析（国内直连快速解析）
     "nameserver-policy": {
         "geosite:private,cn": domesticNameservers
     }
@@ -118,14 +124,34 @@ const ruleProviders = {
     }
 };
 
-// 规则体系（四层漏斗架构：拦截 -> 国内放行 -> 专属业务与AI -> 全量断网兜底）
+// 规则体系（优化漏斗：拦截 -> 局域网 -> 运维 -> STUN/WebRTC防泄露 -> 专属AI与业务 -> 国内放行 -> 全量断网兜底）
 const rules = [
     // 1. 【去广告防追踪】社区源 + 内置库双重拦截，防隐私泄露并节省昂贵的住宅代理流量
     "RULE-SET,reject,REJECT",
     "GEOSITE,category-ads-all,REJECT",
 
-    // 2. 【局域网与国内直连白名单】原生 GeoSite + 社区 direct + 私有直连三保险
+    // 2. 【局域网放行】
     "GEOIP,private,直连,no-resolve",
+
+    // 2.5 【VPS 专属运维通道】远程桌面 (37561) 与 SSH (21389) 直通高质专线，彻底杜绝住宅代理回环绕路
+    "DST-PORT,37561,远程运维",
+    "DST-PORT,21389,远程运维",
+
+    // 3. 【WebRTC / STUN 防穿透】强制 STUN 探测端口进住宅代理，杜绝 UDP 探测走直连泄露真实公网 IP
+    "DST-PORT,3478,AI",
+    "DST-PORT,5349,AI",
+    "DST-PORT,19302,AI",
+
+    // 4. 【专属业务与 Apple 海外服务】必须先于国内白名单匹配，防止 Anycast 节点被 GEOIP,CN 劫持
+    "RULE-SET,appleComProxy,AI",
+    "RULE-SET,custom,AI",
+
+    // 5. 【专属自定义业务与 AI 大模型】社区每日更新 + 原生 GeoSite + 私有强化三保险
+    "RULE-SET,communityAi,AI",
+    "GEOSITE,category-ai-chat-!cn,AI",
+    "RULE-SET,ai,AI",
+
+    // 6. 【国内直连白名单】原生 GeoSite + 社区 direct + 私有直连三保险
     "RULE-SET,appleCnDirect,直连",
     "RULE-SET,directCustom,直连",
     "GEOSITE,apple-cn,直连",
@@ -133,16 +159,7 @@ const rules = [
     "GEOSITE,cn,直连",
     "GEOIP,CN,直连,no-resolve",
 
-    // 3. 【专属业务与 Apple 海外服务】
-    "RULE-SET,appleComProxy,AI",
-    "RULE-SET,custom,AI",
-
-    // 4. 【专属自定义业务与 AI 大模型】社区每日更新 + 原生 GeoSite + 私有强化三保险
-    "RULE-SET,communityAi,AI",
-    "GEOSITE,category-ai-chat-!cn,AI",
-    "RULE-SET,ai,AI",
-
-    // 5. 【核心 Kill-Switch 防御】未被国内白名单命中的全量外网流量 100% 进住宅代理；住宅故障立即全网断死！
+    // 7. 【核心 Kill-Switch 防御】未被国内白名单命中的全量外网流量 100% 进住宅代理；住宅故障立即全网断死！
     "MATCH,AI"
 ];
 
@@ -172,7 +189,7 @@ function main(config) {
             "type": "ss",
             "server": "",
             "port": 22465,
-            "cipher": "2022-blake3-aes-256-gcm",
+            "cipher": "",
             "password": ""
         }
     ];
@@ -195,37 +212,40 @@ function main(config) {
     };
 
     let generatedChainProxies = [];
-    if (hasValidServer && Array.isArray(config.proxies)) {
-        const subscriptionProxies = config.proxies.filter(isCleanSubscriptionProxy);
-        generatedChainProxies = residentialEndpoints.flatMap(ep =>
-            subscriptionProxies.map(p => ({
-                "type": ep.type || "ss",
-                "server": ep.server,
-                "port": ep.port,
-                "cipher": ep.cipher,
-                "password": ep.password,
-                "udp": true,
-                "name": `静态住宅-${ep.label} (链式-${p.name})`,
-                "dialer-proxy": p.name
-            }))
-        );
+    let cleanSubscriptionProxies = [];
+    if (Array.isArray(config.proxies)) {
+        cleanSubscriptionProxies = config.proxies.filter(isCleanSubscriptionProxy);
+        if (hasValidServer) {
+            generatedChainProxies = residentialEndpoints.flatMap(ep =>
+                cleanSubscriptionProxies.map(p => ({
+                    "type": ep.type || "ss",
+                    "server": ep.server,
+                    "port": ep.port,
+                    "cipher": ep.cipher,
+                    "password": ep.password,
+                    "udp": true,
+                    "name": `静态住宅-${ep.label} (链式-${p.name})`,
+                    "dialer-proxy": p.name
+                }))
+            );
 
-        // 优先将低延迟的美西节点排在最前（首选 BGP-08、BGP-07 等优质节点，保障 fallback 始终优先使用最快节点）
-        const getProxyPriority = (name) => {
-            if (/美国-BGP-08/i.test(name)) return 1;
-            if (/美国-BGP-07/i.test(name)) return 2;
-            if (/美国-BGP-05/i.test(name)) return 3;
-            if (/美国-BGP/i.test(name)) return 4;
-            if (/美国/i.test(name)) return 5;
-            if (/香港|HK/i.test(name)) return 6;
-            if (/日本|JP/i.test(name)) return 7;
-            return 10;
-        };
-        generatedChainProxies.sort((a, b) => getProxyPriority(a.name) - getProxyPriority(b.name));
+            // 优先将低延迟的美西节点排在最前（首选 BGP-08、BGP-07 等优质节点，保障 fallback 始终优先使用最快节点）
+            const getProxyPriority = (name) => {
+                if (/美国-BGP-08/i.test(name)) return 1;
+                if (/美国-BGP-07/i.test(name)) return 2;
+                if (/美国-BGP-05/i.test(name)) return 3;
+                if (/美国-BGP/i.test(name)) return 4;
+                if (/美国/i.test(name)) return 5;
+                if (/香港|HK/i.test(name)) return 6;
+                if (/日本|JP/i.test(name)) return 7;
+                return 10;
+            };
+            generatedChainProxies.sort((a, b) => getProxyPriority(a.name) - getProxyPriority(b.name));
 
-        // 清理旧生成的住宅节点并追加新链式节点
-        config.proxies = config.proxies.filter(p => !(p?.name && (String(p.name).startsWith("静态住宅") || String(p.name).startsWith("加州AT&T"))));
-        config.proxies.push(...generatedChainProxies);
+            // 清理旧生成的住宅节点并追加新链式节点
+            config.proxies = config.proxies.filter(p => !(p?.name && (String(p.name).startsWith("静态住宅") || String(p.name).startsWith("加州AT&T"))));
+            config.proxies.push(...generatedChainProxies);
+        }
     }
 
     // 强制关闭 IPv6，彻底杜绝 AAAA 记录绕过规则造成真实 IP 泄露
@@ -238,8 +258,32 @@ function main(config) {
         ? generatedChainProxies.map(p => p.name)
         : ["DIRECT"];
 
+    // 仅保留美国优质专线节点（加州 VPS 运维专用，彻底过滤迪拜、巴西、欧洲、香港等无关高延时节点）
+    const usProxies = cleanSubscriptionProxies.filter(p => {
+        if (!p || typeof p.name !== "string") return false;
+        const name = p.name;
+        if (/家宽|住宅|倍率/i.test(name)) return false;
+        return /(?:美国|United\s*States|\bUS\b|🇺🇸)/i.test(name);
+    });
+
+    // 智能排序：【优化】专线节点排最前（实测226ms），其次是 Pro-BGP、Basic-BGP
+    const getOpsPriority = (name) => {
+        if (/优化/i.test(name)) return 1;
+        if (/Pro-美国-BGP/i.test(name)) return 2;
+        if (/Basic-美国-BGP/i.test(name)) return 3;
+        if (/BGP/i.test(name)) return 4;
+        return 10;
+    };
+    usProxies.sort((a, b) => getOpsPriority(a.name) - getOpsPriority(b.name));
+    const usProxyNames = usProxies.map(p => p.name);
+
+    // 远程运维候选列表：自动优选 + 直连 + 纯美西优质专线节点
+    const opsProxyList = usProxyNames.length > 0
+        ? ["自动优选", "直连", ...usProxyNames]
+        : (cleanSubscriptionProxies.length > 0 ? ["直连", ...cleanSubscriptionProxies.map(p => p.name)] : ["直连"]);
+
     // 覆盖原配置中的代理组
-    config["proxy-groups"] = [
+    const proxyGroups = [
         {
             ...groupBaseOption,
             "name": "所有节点",
@@ -257,17 +301,71 @@ function main(config) {
         },
         {
             ...groupBaseOption,
-            "name": "直连",
+            "name": "远程运维",
             "type": "select",
-            "proxies": ["DIRECT"],
+            "proxies": opsProxyList,
             "include-all": false,
-            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg"
+            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
         }
     ];
+
+    // 若存在可用美国优质节点，提供专属“自动优选”测速组（动态自动切换至最低延迟美西专线）
+    if (usProxyNames.length > 0) {
+        proxyGroups.push({
+            ...groupBaseOption,
+            "name": "自动优选",
+            "type": "url-test",
+            "proxies": usProxyNames,
+            "url": "https://www.google.com/generate_204",
+            "interval": 300,
+            "tolerance": 50,
+            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
+        });
+    }
+
+    proxyGroups.push({
+        ...groupBaseOption,
+        "name": "直连",
+        "type": "select",
+        "proxies": ["DIRECT"],
+        "include-all": false,
+        "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg"
+    });
+
+    config["proxy-groups"] = proxyGroups;
 
     // 覆盖原配置中的规则
     config["rule-providers"] = ruleProviders;
     config["rules"] = rules;
+
+    // 全局网络与性能强化
+    config["tcp-concurrent"] = true;
+    config["unified-delay"] = true;
+
+    // 强制注入 TUN 虚拟网卡配置，彻底接管系统级 TCP/UDP，封堵浏览器 WebRTC 绕过系统代理的致命漏洞
+    config["tun"] = {
+        "enable": true,
+        "stack": "mixed",
+        "dns-hijack": ["any:53", "tcp://any:53"],
+        "auto-route": true,
+        "auto-detect-interface": true,
+        "strict-route": true,
+        "endpoint-independent-nat": true
+    };
+
+    // 域名嗅探配置，提升纯 IP / TLS 流量的分流精度
+    config["sniffer"] = {
+        "enable": true,
+        "force-dns-mapping": true,
+        "parse-pure-ip": true,
+        "override-destination": false,
+        "sniff": {
+            "TLS": { "ports": [443, 8443] },
+            "HTTP": { "ports": [80, "8080-8880"], "override-destination": true },
+            "QUIC": { "ports": [443, 8443] }
+        },
+        "skip-domain": ["Mijia Cloud"]
+    };
 
     // 为所有节点（包含住宅与机场节点）设置 udp = true，保障 WebRTC 与 UDP 转发全面通畅
     if (config["proxies"]) {
