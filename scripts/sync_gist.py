@@ -15,6 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 APPLE_CONF_PATH = ROOT / "apple.conf"
+WINDOWS_JS_PATH = ROOT / "windows.js"
 SCRIPT_JS_PATH = (
     Path(os.environ.get("APPDATA", ""))
     / "io.github.clash-verge-rev.clash-verge-rev"
@@ -76,6 +77,15 @@ def main() -> None:
         apple_conf,
     )
 
+    windows_js = WINDOWS_JS_PATH.read_text("utf-8")
+    windows_js_full = re.sub(
+        r'("server":\s*)"[^"]*",\s*\n(\s*"port":\s*)\d+,\s*\n(\s*"cipher":\s*)"[^"]*",\s*\n(\s*"password":\s*)"[^"]*"',
+        rf'\g<1>"{server}",\n\g<2>{port},\n\g<3>"{cipher}",\n\g<4>"{password}"',
+        windows_js,
+    )
+    if windows_js_full != script_js:
+        SCRIPT_JS_PATH.write_text(windows_js_full, "utf-8")
+
     token = get_github_token()
     gist_id = find_secret_gist_id(token)
     payload = json.dumps(
@@ -83,7 +93,7 @@ def main() -> None:
             "description": "Private Clash Verge & Shadowrocket Config (with credentials)",
             "files": {
                 "apple.conf": {"content": apple_conf_full},
-                "windows.js": {"content": script_js},
+                "windows.js": {"content": windows_js_full},
             },
         }
     ).encode("utf-8")
