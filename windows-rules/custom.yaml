@@ -30,7 +30,13 @@ payload:
   - DOMAIN-SUFFIX,iproyal.cn
   - DOMAIN-SUFFIX,dnshe.com
   - DOMAIN-SUFFIX,revenuecat.com
+  - DOMAIN-SUFFIX,superwall.com
+  - DOMAIN-SUFFIX,superwall.me
   - DOMAIN-SUFFIX,fastly-edge.com
+  - DOMAIN-SUFFIX,x.com
+  - DOMAIN-SUFFIX,twitter.com
+  - DOMAIN-SUFFIX,twimg.com
+  - DOMAIN-SUFFIX,t.co
 
   # ===== Canva 与新兴 AI 工具 (如 muse.ai, gushanai) =====
   - DOMAIN-SUFFIX,muse.ai
