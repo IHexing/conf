@@ -124,44 +124,43 @@ const ruleProviders = {
     }
 };
 
-// 规则体系（优化漏斗：拦截 -> 局域网 -> 运维 -> STUN/WebRTC防泄露 -> 专属AI与业务 -> 国内放行 -> 全量断网兜底）
+// 规则体系（优化漏斗：局域网/运维 -> STUN防泄露 -> AI与专属业务 -> 去广告 -> 私有直连 -> Apple海外 -> 国内放行 -> 全量断网兜底）
 const rules = [
-    // 1. 【去广告防追踪】社区源 + 内置库双重拦截，防隐私泄露并节省昂贵的住宅代理流量
-    "RULE-SET,reject,REJECT",
-    "GEOSITE,category-ads-all,REJECT",
-
-    // 2. 【局域网放行】
+    // 1. 【局域网与远程运维】内网直连与 VPS 专线运维 (37561/21389) 优先放行
     "GEOIP,private,直连,no-resolve",
-
-    // 2.5 【VPS 专属运维通道】远程桌面 (37561) 与 SSH (21389) 直通高质专线，彻底杜绝住宅代理回环绕路
     "DST-PORT,37561,远程运维",
     "DST-PORT,21389,远程运维",
 
-    // 3. 【WebRTC / STUN 防穿透】强制 STUN 域名与端口进住宅代理，杜绝 UDP 探测走直连泄露真实公网 IP
+    // 2. 【WebRTC / STUN 防穿透】置于直连规则之前，防止 stun.chat.bilibili.com 等国内 STUN 走直连泄露真实公网 IP
     "DOMAIN-KEYWORD,stun,AI",
     "DST-PORT,3478,AI",
     "DST-PORT,5349,AI",
     "DST-PORT,19302,AI",
 
-    // 4. 【专属业务与 Apple 海外服务】必须先于国内白名单匹配，防止 Anycast 节点被 GEOIP,CN 劫持
-    "RULE-SET,appleComProxy,AI",
-    "RULE-SET,custom,AI",
-
-    // 5. 【专属自定义业务与 AI 大模型】社区每日更新 + 原生 GeoSite + 私有强化三保险
+    // 3. 【AI 大模型与专属自定义业务】置于去广告与国内规则之前，防止 Statsig/FeatureGates/Turnstile 探针被去广告误杀或被国内规则劫持
     "RULE-SET,communityAi,AI",
     "GEOSITE,category-ai-chat-!cn,AI",
     "RULE-SET,ai,AI",
+    "RULE-SET,custom,AI",
 
-    // 6. 【国内直连白名单】原生 GeoSite + 社区 direct + 私有直连三保险
-    "DOMAIN-SUFFIX,hanghao.cc,直连",
+    // 4. 【去广告防追踪】社区源 + 内置库双重拦截，拦截国内 App 开屏广告、网页广告与 Apple 广告追踪
+    "RULE-SET,reject,REJECT",
+    "GEOSITE,category-ads-all,REJECT",
+
+    // 5. 【私有直连与国区 Apple 白名单】置于 appleComProxy 之前，确保 time.apple.com 等精准走直连
     "RULE-SET,appleCnDirect,直连",
     "RULE-SET,directCustom,直连",
     "GEOSITE,apple-cn,直连",
+
+    // 6. 【Apple 海外服务】先于国内通用 CN 库与 GEOIP,CN 匹配，防止 Anycast 节点被劫持直连
+    "RULE-SET,appleComProxy,AI",
+
+    // 7. 【国内通用直连白名单】社区 direct + 原生 CN 库
     "RULE-SET,direct,直连",
     "GEOSITE,cn,直连",
     "GEOIP,CN,直连,no-resolve",
 
-    // 7. 【核心 Kill-Switch 防御】未被国内白名单命中的全量外网流量 100% 进住宅代理；住宅故障立即全网断死！
+    // 8. 【核心 Kill-Switch 防御】未被国内白名单命中的全量外网流量 100% 进住宅代理；住宅故障立即全网断死！
     "MATCH,AI"
 ];
 

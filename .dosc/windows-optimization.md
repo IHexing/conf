@@ -36,32 +36,33 @@
 
 ## 3. 架构优化设计（方案 A：Mihomo 原生 Geo 体系 + 极简自定义）
 
-### 3.1 路由分流漏斗模型（四层防御）
+### 3.1 路由分流漏斗模型（与手机端 100% 架构对齐）
 
 ```mermaid
 graph TD
-    A[所有流入流量] --> B[第一层: 拦截与去广告<br>GEOSITE,category-ads-all --> REJECT]
-    B --> C[第二层: 国内白名单放行<br>GEOIP,private<br>RULE-SET,appleCnDirect<br>GEOSITE,apple-cn<br>GEOSITE,cn<br>GEOIP,CN]
-    C -->|匹配成功| D[直连 DIRECT]
-    C -->|未匹配| E[第三层: 专属业务与AI<br>RULE-SET,appleComProxy<br>RULE-SET,custom<br>RULE-SET,ai]
-    E -->|匹配成功| F[AI 住宅代理]
-    E -->|未匹配| G[第四层: 核心兜底防御<br>MATCH,AI]
+    A["所有流入流量"] --> S["第1~2层: 局域网/运维直通 + WebRTC/STUN 防穿透"]
+    S -->|STUN探测| F["AI 住宅代理"]
+    S -->|常规流量| E["第3层: AI 大模型与专属自定义业务<br/>communityAi / ai / custom"]
+    E -->|匹配成功| F
+    E -->|未匹配| B["第4层: 广告与遥测拦截<br/>reject + category-ads-all --> REJECT"]
+    B -->|未匹配| C["第5~7层: 私有直连 -> 海外Apple -> 国内通用白名单<br/>directCustom -> appleComProxy -> direct/cn/GEOIP CN"]
+    C -->|国内直连匹配| D["直连 DIRECT"]
+    C -->|海外Apple匹配| F
+    C -->|未匹配| G["第8层: 核心兜底防御<br/>MATCH,AI"]
     G --> F
 ```
 
-1. **第一层（广告与遥测拦截 + WebRTC/STUN 防穿透前置拦截）**：
-   * 广告与追踪拦截：`RULE-SET,reject,REJECT` + `GEOSITE,category-ads-all,REJECT`，防止遥测请求消耗住宅代理流量。
-   * WebRTC/STUN 防泄漏：`DOMAIN-KEYWORD,stun,AI` + `DST-PORT,3478/5349/19302,AI` 置于国内直连规则之前，彻底阻断国内 STUN 节点（如 B 站、小米等 `stun.*:3478`）直连探测暴露本机真实公网 IP。
-2. **第二层（国内白名单放行）**：
-   * 局域网私有网段：`GEOIP,private,直连,no-resolve`
-   * Apple 国内专属服务：`RULE-SET,appleCnDirect,直连` + `GEOSITE,apple-cn,直连`
-   * 国内主流大厂及中国 IP 库：`GEOSITE,cn,直连` + `GEOIP,CN,直连,no-resolve`
-3. **第三层（重点专属平台走住宅）**：
-   * Apple 海外服务：`RULE-SET,appleComProxy,AI`
-   * 自定义重点平台（采购、支付、住宅服务商）：`novproxy`、`oyunfor`、`iyzico`、`chatgpt.site`、`cc.cd`、`miyaip`、`iproyal.cn`、`dnshe.com`
-   * 个人自建与 Canva 工作流：`RULE-SET,custom,AI`
-   * 大模型专属生态：`RULE-SET,ai,AI`
-4. **第四层（绝对 Kill-Switch 兜底）**：`MATCH,AI`。
+1. **第 1~2 层（局域网/运维放行 + WebRTC/STUN 防穿透）**：
+   * 局域网与 VPS 专线运维：`GEOIP,private,直连,no-resolve` + `DST-PORT,37561/21389,远程运维`。
+   * WebRTC/STUN 防泄漏：`DOMAIN-KEYWORD,stun,AI` + `DST-PORT,3478/5349/19302,AI` 置于直连规则之前，彻底阻断国内 STUN 节点（如 B 站 `stun.chat.bilibili.com:3478`、小米等）走直连暴露本机真实公网 IP。
+2. **第 3 层（AI 大模型与专属业务最高优保护）**：
+   * 置于通用去广告规则之前，防止 OpenAI / Claude 的 `statsig`、`featuregates.org`、`static.cloudflareinsights.com` 等风控与功能开关接口被去广告规则误杀，同时防止 `iproyal.cn`、`anthropic.com.cn` 被国内规则劫持。
+3. **第 4 层（广告与遥测拦截）**：
+   * `RULE-SET,reject,REJECT` + `GEOSITE,category-ads-all,REJECT`，拦截国内 App 广告、网页追踪及 `advertising.apple.com` 等苹果广告，节省住宅代理流量。
+4. **第 5~7 层（私有直连 -> Apple 海外专线 -> 国内通用白名单）**：
+   * 私有直连与国区 Apple（`appleCnDirect`、`directCustom`、`GEOSITE,apple-cn`）置于 `appleComProxy` 之前，确保 `time.apple.com` 等精准直连；
+   * `appleComProxy` 置于通用国内库（`direct`、`GEOSITE,cn`、`GEOIP,CN,no-resolve`）之前，防止 Apple 海外 Anycast 节点被劫持直连。
+5. **第 8 层（绝对 Kill-Switch 兜底）**：`MATCH,AI`。
    * 除上述国内白名单外，未被规则库覆盖的全部外网流量强制走住宅代理；
    * 一旦住宅代理不可用，内核抛出连接超时/重置错误，**彻底断网，杜绝任何直连泄漏可能**。
 

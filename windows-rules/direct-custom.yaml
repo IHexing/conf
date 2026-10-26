@@ -1,6 +1,7 @@
 payload:
   # ===== 1. 公司与私有基础设施（本地直连，不绕道海外住宅代理） =====
   - DOMAIN-SUFFIX,verytrading.com
+  - DOMAIN-SUFFIX,hanghao.cc
 
   # ===== 2. 金融支付与手机网银（防国外 IP 风控阻断、拒登） =====
   - DOMAIN-SUFFIX,abchina.com

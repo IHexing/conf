@@ -50,7 +50,6 @@ DOMAIN,openai.canva.com
 DOMAIN,openai.canva.xyz
 
 # ===== SaaS 支持与遥测 =====
-DOMAIN-KEYWORD,ad.doubleclick.net
 DOMAIN-KEYWORD,api-eu.mixpanel.com
 DOMAIN-KEYWORD,api.hubapi.com
 DOMAIN-KEYWORD,api.hubspot.com
@@ -63,7 +62,6 @@ DOMAIN-KEYWORD,feedback.hubapi.com
 DOMAIN-KEYWORD,find.userpilot.io
 DOMAIN-KEYWORD,forms.hscollectedforms.net
 DOMAIN-KEYWORD,o116547.ingest.sentry.io
-DOMAIN-KEYWORD,px.ads.linkedin.com
 DOMAIN-SUFFIX,amazoncognito.com
 DOMAIN-SUFFIX,cloudfront.net
 DOMAIN-SUFFIX,s3.amazonaws.com

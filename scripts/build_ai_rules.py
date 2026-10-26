@@ -111,7 +111,6 @@ VPS_PROVIDERS: list[tuple[str, str]] = [
 
 BM7_FILES: list[tuple[str, str]] = [
     ("bm7-OpenAI.list", "OpenAI"),
-    ("bm7-OpenAI_Resolve.list", "OpenAI"),
     ("bm7-Claude.list", "Anthropic"),
     ("bm7-Anthropic.list", "Anthropic"),
     ("bm7-Gemini.list", "Google AI"),
@@ -130,7 +129,6 @@ BM7_BASE = (
 )
 BM7_MAP = {
     "bm7-OpenAI.list": ("OpenAI", "OpenAI", "OpenAI.list"),
-    "bm7-OpenAI_Resolve.list": ("OpenAI", "OpenAI", "OpenAI_Resolve.list"),
     "bm7-Claude.list": ("Claude", "Claude", "Claude.list"),
     "bm7-Anthropic.list": ("Anthropic", "Anthropic", "Anthropic.list"),
     "bm7-Gemini.list": ("Gemini", "Gemini", "Gemini.list"),
@@ -184,6 +182,9 @@ def parse_rules(text: str) -> list[str]:
         if s.startswith("PROCESS-NAME,") and any(k in s.lower() for k in ("claude", "cowork-svc")):
             continue
         if RULE_RE.match(s):
+            # 强制所有 IP/ASN 规则携带 no-resolve，防止在分流匹配时触发对国内域名的额外海外 DNS 解析
+            if s.startswith(("IP-CIDR,", "IP-CIDR6,", "IP-ASN,")) and not s.endswith(",no-resolve"):
+                s = f"{s},no-resolve"
             rules.append(s)
     return rules
 
@@ -233,12 +234,14 @@ def write_list(sections: OrderedDict[str, list[str]]) -> int:
     ]
     total = 0
     for vendor, rules in sections.items():
-        if not rules:
+        # iOS 小火箭无需桌面端 PROCESS-NAME 规则
+        ios_rules = [r for r in rules if not r.startswith("PROCESS-NAME,")]
+        if not ios_rules:
             continue
         lines.append(f"# ===== {vendor} =====")
-        lines.extend(rules)
+        lines.extend(ios_rules)
         lines.append("")
-        total += len(rules)
+        total += len(ios_rules)
 
     LIST_OUT.parent.mkdir(parents=True, exist_ok=True)
     LIST_OUT.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8", newline="\n")

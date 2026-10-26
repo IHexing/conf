@@ -21,12 +21,6 @@ DOMAIN-SUFFIX,openaicom.imgix.net
 DOMAIN-SUFFIX,sora.com
 DOMAIN-KEYWORD,chatgpt-async-webps-prod
 DOMAIN-KEYWORD,openai
-PROCESS-NAME,ChatGPT
-PROCESS-NAME,ChatGPT.exe
-PROCESS-NAME,Codex
-PROCESS-NAME,Codex.exe
-PROCESS-NAME,chatgpt
-PROCESS-NAME,codex
 IP-CIDR,199.47.142.0/23,no-resolve
 IP-CIDR,24.199.123.28/32,no-resolve
 IP-CIDR,64.23.132.171/32,no-resolve
@@ -61,9 +55,6 @@ DOMAIN-SUFFIX,stripe.com
 DOMAIN-SUFFIX,turn.livekit.cloud
 DOMAIN,chat.openai.com.cdn.cloudflare.net
 IP-ASN,20473,no-resolve
-IP-CIDR,24.199.123.28/32
-IP-CIDR,64.23.132.171/32
-IP-ASN,20473
 
 # ===== Anthropic =====
 DOMAIN-SUFFIX,anthropic.com
@@ -126,9 +117,6 @@ DOMAIN-SUFFIX,generativeai.google
 DOMAIN-SUFFIX,generativelanguage.googleapis.com
 DOMAIN-SUFFIX,notebooklm.google
 DOMAIN-SUFFIX,notebooklm.google.com
-PROCESS-NAME,Antigravity
-PROCESS-NAME,Antigravity.exe
-PROCESS-NAME,antigravity
 DOMAIN,alkalicore-pa.clients6.google.com
 DOMAIN,alkalimakersuite-pa.clients6.google.com
 DOMAIN,antigravity-pa.googleapis.com
@@ -257,9 +245,6 @@ DOMAIN-SUFFIX,cursor-cdn.com
 DOMAIN-SUFFIX,cursor.com
 DOMAIN-SUFFIX,cursor.sh
 DOMAIN-SUFFIX,cursorapi.com
-PROCESS-NAME,Cursor
-PROCESS-NAME,Cursor.exe
-PROCESS-NAME,cursor
 
 # ===== Zed =====
 DOMAIN-SUFFIX,zed.dev
@@ -269,9 +254,6 @@ DOMAIN-SUFFIX,codeium.com
 DOMAIN-SUFFIX,codeiumdata.com
 DOMAIN-SUFFIX,windsurf.build
 DOMAIN-SUFFIX,windsurf.com
-PROCESS-NAME,Windsurf
-PROCESS-NAME,Windsurf.exe
-PROCESS-NAME,windsurf
 
 # ===== JetBrains AI =====
 DOMAIN-SUFFIX,grazie.ai
@@ -280,9 +262,6 @@ DOMAIN-SUFFIX,jetbrains.ai
 
 # ===== Augment Code =====
 DOMAIN-SUFFIX,augmentcode.com
-PROCESS-NAME,Augment
-PROCESS-NAME,Augment.exe
-PROCESS-NAME,augment
 
 # ===== Factory =====
 DOMAIN-SUFFIX,factory.ai

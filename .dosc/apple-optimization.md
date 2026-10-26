@@ -52,17 +52,20 @@
 
 ## 🛠️ 三、 终极重构架构方案（方案 1：极速高精混合流 + 社区在线 AI 全家桶）
 
-### 1. 四层漏斗分流模型
+### 1. 七层精准漏斗分流模型（与电脑端 100% 架构对齐）
 
 ```mermaid
 flowchart TD
-    A["手机流量入口"] --> B{"第一层: 广告静默拦截<br/>(REJECT-DROP)"}
+    A["手机流量入口"] --> S{"第1层: WebRTC/STUN 防穿透<br/>(stun / 3478 / 5349 / 19302)"}
+    S -->|STUN探测| G["HOME 住宅代理出口"]
+    S -->|常规流量| F{"第2层: AI 大模型与专属业务<br/>(VPSDance + ai.list + custom.list + ustd.list)"}
+    F -->|匹配 AI/自定义业务/理财| G
+    F -->|其他流量| B{"第3层: 广告静默拦截<br/>(REJECT-DROP)"}
     B -->|广告/追踪| C["静默丢弃 (消除12万次死循环重试)"]
-    B -->|正常请求| D{"第二层: 国内白名单直连<br/>(AppleCN + Direct + GEOIP CN)"}
-    D -->|国内流量/微信/B站/国区Apple| E["DIRECT 毫秒级直连"]
-    D -->|非国内流量| F{"第三层: 专属业务与 AI<br/>(VPSDance在线AI + ai.list + custom.list + AppleComProxy)"}
-    F -->|匹配 AI/自定义业务/海外Apple| G["HOME 住宅代理出口"]
-    F -->|未知外网流量| H["第四层: Kill-Switch 兜底<br/>(FINAL, HOME)"]
+    B -->|正常请求| D1{"第4~6层: 私有直连 -> 海外Apple -> 通用国内直连<br/>(direct-custom -> apple-com-proxy -> China.list/GEOIP CN)"}
+    D1 -->|国内流量/微信/B站/国区Apple| E["DIRECT 毫秒级直连"]
+    D1 -->|海外Apple/iCloud| G
+    D1 -->|未知外网流量| H["第7层: Kill-Switch 兜底<br/>(FINAL, HOME)"]
     H -->|杜绝国内直连泄露| G
 ```
 
