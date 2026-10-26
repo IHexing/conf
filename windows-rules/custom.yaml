@@ -16,6 +16,10 @@ payload:
   - DOMAIN-KEYWORD,cloudflarestorage.com
 
   # ===== 工作流与开发组件 =====
+  - DOMAIN-SUFFIX,github.com
+  - DOMAIN-SUFFIX,githubusercontent.com
+  - DOMAIN-SUFFIX,githubassets.com
+  - DOMAIN-SUFFIX,github.io
   - DOMAIN-KEYWORD,mvnrepository.com
   - DOMAIN-KEYWORD,n8n.cloud
   - DOMAIN-KEYWORD,n8n.io
