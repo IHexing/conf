@@ -37,6 +37,18 @@ payload:
   - DOMAIN-SUFFIX,twitter.com
   - DOMAIN-SUFFIX,twimg.com
   - DOMAIN-SUFFIX,t.co
+  - DOMAIN-SUFFIX,pscp.tv
+  - DOMAIN-SUFFIX,google.com
+  - DOMAIN-SUFFIX,googleapis.com
+  - DOMAIN-SUFFIX,googleusercontent.com
+  - DOMAIN-SUFFIX,gstatic.com
+  - DOMAIN-SUFFIX,youtube.com
+  - DOMAIN-SUFFIX,googlevideo.com
+  - DOMAIN-SUFFIX,ytimg.com
+  - DOMAIN-SUFFIX,ggpht.com
+  - DOMAIN-SUFFIX,instagram.com
+  - DOMAIN-SUFFIX,facebook.com
+  - DOMAIN-SUFFIX,fbcdn.net
 
   # ===== Canva 与新兴 AI 工具 (如 muse.ai, gushanai) =====
   - DOMAIN-SUFFIX,muse.ai

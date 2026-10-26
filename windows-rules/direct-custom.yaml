@@ -2,6 +2,7 @@ payload:
   # ===== 1. 公司与私有基础设施（本地直连，不绕道海外住宅代理） =====
   - DOMAIN-SUFFIX,verytrading.com
   - DOMAIN-SUFFIX,hanghao.cc
+  - DOMAIN-SUFFIX,yirujs.com
 
   # ===== 2. 金融支付与手机网银（防国外 IP 风控阻断、拒登） =====
   - DOMAIN-SUFFIX,abchina.com
@@ -14,6 +15,14 @@ payload:
   # ===== 3. 国内生活出行与高频 App 业务 =====
   - DOMAIN-SUFFIX,hikparking.com
   - DOMAIN-SUFFIX,dianping.com
+  - DOMAIN-SUFFIX,meituan.com
+  - DOMAIN-SUFFIX,meituan.net
+  - DOMAIN-SUFFIX,pinduoduo.com
+  - DOMAIN-SUFFIX,pddpic.com
+  - DOMAIN-SUFFIX,pddugc.com
+  - DOMAIN-SUFFIX,midea.com
+  - DOMAIN-SUFFIX,smartmidea.net
+  - DOMAIN-SUFFIX,qinlinkeji.com
   - DOMAIN-SUFFIX,lkcoffee.com
   - DOMAIN-SUFFIX,luckincoffeecdn.com
   - DOMAIN-SUFFIX,bus365.com
@@ -23,6 +32,10 @@ payload:
 
   # ===== 4. 国内底层通行认证与小程序网关 =====
   - DOMAIN-SUFFIX,id6.me
+  - DOMAIN-SUFFIX,qq.com
+  - DOMAIN-SUFFIX,qcloud.com
+  - DOMAIN-SUFFIX,myqcloud.com
+  - DOMAIN-SUFFIX,tfogc.com
   - DOMAIN-SUFFIX,weixinbridge.com
   - DOMAIN-SUFFIX,servicewechat.com
   - DOMAIN-SUFFIX,wxgateway.com
