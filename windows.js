@@ -137,7 +137,8 @@ const rules = [
     "DST-PORT,37561,远程运维",
     "DST-PORT,21389,远程运维",
 
-    // 3. 【WebRTC / STUN 防穿透】强制 STUN 探测端口进住宅代理，杜绝 UDP 探测走直连泄露真实公网 IP
+    // 3. 【WebRTC / STUN 防穿透】强制 STUN 域名与端口进住宅代理，杜绝 UDP 探测走直连泄露真实公网 IP
+    "DOMAIN-KEYWORD,stun,AI",
     "DST-PORT,3478,AI",
     "DST-PORT,5349,AI",
     "DST-PORT,19302,AI",
@@ -152,6 +153,7 @@ const rules = [
     "RULE-SET,ai,AI",
 
     // 6. 【国内直连白名单】原生 GeoSite + 社区 direct + 私有直连三保险
+    "DOMAIN-SUFFIX,hanghao.cc,直连",
     "RULE-SET,appleCnDirect,直连",
     "RULE-SET,directCustom,直连",
     "GEOSITE,apple-cn,直连",
@@ -229,7 +231,7 @@ function main(config) {
                 }))
             );
 
-            // 优先将低延迟的美西节点排在最前（首选 BGP-08、BGP-07 等优质节点，保障 fallback 始终优先使用最快节点）
+            // 优先将低延迟的美西节点排在最前（首选 BGP-08、BGP-07 等优质节点）
             const getProxyPriority = (name) => {
                 if (/美国-BGP-08/i.test(name)) return 1;
                 if (/美国-BGP-07/i.test(name)) return 2;
@@ -294,7 +296,8 @@ function main(config) {
         {
             ...groupBaseOption,
             "name": "AI",
-            "type": "fallback",
+            "type": "url-test",
+            "tolerance": 50,
             "proxies": aiProxyList,
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg"
@@ -341,31 +344,6 @@ function main(config) {
     // 全局网络与性能强化
     config["tcp-concurrent"] = true;
     config["unified-delay"] = true;
-
-    // 强制注入 TUN 虚拟网卡配置，彻底接管系统级 TCP/UDP，封堵浏览器 WebRTC 绕过系统代理的致命漏洞
-    config["tun"] = {
-        "enable": true,
-        "stack": "mixed",
-        "dns-hijack": ["any:53", "tcp://any:53"],
-        "auto-route": true,
-        "auto-detect-interface": true,
-        "strict-route": true,
-        "endpoint-independent-nat": true
-    };
-
-    // 域名嗅探配置，提升纯 IP / TLS 流量的分流精度
-    config["sniffer"] = {
-        "enable": true,
-        "force-dns-mapping": true,
-        "parse-pure-ip": true,
-        "override-destination": false,
-        "sniff": {
-            "TLS": { "ports": [443, 8443] },
-            "HTTP": { "ports": [80, "8080-8880"], "override-destination": true },
-            "QUIC": { "ports": [443, 8443] }
-        },
-        "skip-domain": ["Mijia Cloud"]
-    };
 
     // 为所有节点（包含住宅与机场节点）设置 udp = true，保障 WebRTC 与 UDP 转发全面通畅
     if (config["proxies"]) {

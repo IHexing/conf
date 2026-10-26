@@ -49,7 +49,9 @@ graph TD
     G --> F
 ```
 
-1. **第一层（广告与遥测拦截）**：`GEOSITE,category-ads-all,REJECT`。使用 Mihomo 内置库拦截广告打点，防止遥测请求消耗昂贵的住宅代理流量。
+1. **第一层（广告与遥测拦截 + WebRTC/STUN 防穿透前置拦截）**：
+   * 广告与追踪拦截：`RULE-SET,reject,REJECT` + `GEOSITE,category-ads-all,REJECT`，防止遥测请求消耗住宅代理流量。
+   * WebRTC/STUN 防泄漏：`DOMAIN-KEYWORD,stun,AI` + `DST-PORT,3478/5349/19302,AI` 置于国内直连规则之前，彻底阻断国内 STUN 节点（如 B 站、小米等 `stun.*:3478`）直连探测暴露本机真实公网 IP。
 2. **第二层（国内白名单放行）**：
    * 局域网私有网段：`GEOIP,private,直连,no-resolve`
    * Apple 国内专属服务：`RULE-SET,appleCnDirect,直连` + `GEOSITE,apple-cn,直连`
@@ -65,14 +67,12 @@ graph TD
 
 ---
 
-### 3.2 代理策略组改造（`fallback` 主备容灾）
+### 3.2 代理策略组设计（`url-test` 动态低延迟优选）
 
-* **放弃 `url-test` 的原因**：
-  链式代理的出口 IP **永远固定是同一个住宅代理 IP**。`url-test` 测速仅能反映前置跳板毫秒级的波动，但会不断切断 TCP 会话；同时每隔几分钟对同一住宅端口并发发起近百次测速，易触发服务商并发限流。
-* **采用 `fallback` 策略**：
-  * **锁定首选跳板**：优先使用第一顺位的高质量跳板，只要不掉线，**永远不切换前置节点**，保障长连接稳固；
-  * **故障无缝转移**：当前跳板故障时，自动下移至备用跳板；
-  * **全挂彻底阻断**：当住宅代理自身掉线时，所有跳板链全部超时，策略组整体阻断，完美达成 Kill-Switch。
+* **策略选择**：
+  采用 `type: "url-test"` 自动测速选择，动态切换到延迟最低的链式跳板（如美国优质专线 220ms 节点）。
+* **防抖优化**：
+  配置 `tolerance: 50` 容差与 `lazy: true` 懒加载，在延迟波动在 50ms 以内时不频繁切换跳板，兼顾低延迟体验与长连接稳定性；同时当住宅代理整体不可用时，依然能实现全链超时阻断，保障 Kill-Switch。
 
 ---
 
@@ -95,11 +95,12 @@ if (/expire|traffic|sync|到期|剩余|流量|官网|更新|通知|倍率|网址
    dnsConfig["ipv6"] = false;
    ```
    覆盖 Clash Verge 默认开启的 IPv6，阻断 Anthropic 等服务的 AAAA 请求直连泄露。
-2. **补全 `direct-nameserver`**：
+2. **海外 DoH 并发解析与 `direct-nameserver` 分流**：
    ```javascript
+   nameserver: [...foreignNameservers, ...domesticNameservers],
    "direct-nameserver": [...domesticNameservers],
    ```
-   开启 `respect-rules: true` 时，保障国内直连域名由阿里/腾讯 DoH 安全快速解析，解决解析卡顿。
+   引入 Cloudflare/Google 海外 DoH（由 `proxy-server-nameserver` 安全引导）配合 `respect-rules: true`，既避免海外 CDN 分配高延迟亚太边缘节点，又保障国内直连域名由阿里/腾讯 DoH 快速解析。
 
 ---
 
