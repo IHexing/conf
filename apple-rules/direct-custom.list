@@ -1,4 +1,4 @@
-# Private Direct Rules — 公司与私有基础设施（走本地直连，不绕道海外住宅代理）
+# 自定义直连覆盖：在此维护，windows-rules/direct-custom.yaml 由同步脚本生成
 # Policy assigned in apple.conf (DIRECT)
 
 # ===== 1. 公司与私有基础设施（含机场国内中转入口） =====

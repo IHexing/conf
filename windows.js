@@ -54,44 +54,32 @@ const ruleProviderCommon = {
     "interval": 86400
 };
 
-// 规则集配置（私有定制源 CDN + 社区 Loyalsoldier 上游源）
+// 社区规则直接订阅；本地只维护自定义代理和自定义直连
 const cdnBase = "https://fastly.jsdelivr.net/gh/IHexing/conf@main/windows-rules";
 const loyalCdn = "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release";
 
 const ruleProviders = {
-    // 1. 【社区维护】全网广告与遥测拦截（每日自动更新，极大节省昂贵的住宅代理流量）
     "reject": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "format": "text",
+        "format": "yaml",
         "url": `${loyalCdn}/reject.txt`,
-        "path": "./ruleset/community/reject.txt"
+        "path": "./ruleset/community/reject.yaml"
     },
-    // 2. 【社区维护】国内直连白名单补充（每日自动更新，确保国内冷门网站直连不误入住宅）
     "direct": {
         ...ruleProviderCommon,
         "behavior": "domain",
-        "format": "text",
-        "url": `${loyalCdn}/direct.txt`,
-        "path": "./ruleset/community/direct.txt"
-    },
-    // 3. 【社区维护】AI 大模型全家桶（VPSDance 每日自动更新，涵盖 100+ 全球主流 AI 服务）
-    "communityAi": {
-        ...ruleProviderCommon,
-        "behavior": "classical",
         "format": "yaml",
-        "url": "https://fastly.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/all.yaml",
-        "path": "./ruleset/community/ai-all.yaml"
+        "url": `${loyalCdn}/direct.txt`,
+        "path": "./ruleset/community/direct.yaml"
     },
-    // 4. 【你专属维护】大模型全家桶（已针对 Claude Code 做本地进程避让）
     "ai": {
         ...ruleProviderCommon,
         "behavior": "classical",
         "format": "yaml",
-        "url": `${cdnBase}/ai.yaml`,
-        "path": "./ruleset/private/ai.yaml"
+        "url": "https://fastly.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml",
+        "path": "./ruleset/community/ai-global.yaml"
     },
-    // 5. 【你专属维护】个人业务、Canva、海外支付采购平台
     "custom": {
         ...ruleProviderCommon,
         "behavior": "classical",
@@ -99,22 +87,6 @@ const ruleProviders = {
         "url": `${cdnBase}/custom.yaml`,
         "path": "./ruleset/private/custom.yaml"
     },
-    // 6. 【你专属维护】Apple 国内直连与国外代理
-    "appleCnDirect": {
-        ...ruleProviderCommon,
-        "behavior": "domain",
-        "format": "yaml",
-        "url": `${cdnBase}/apple-cn-direct.yaml`,
-        "path": "./ruleset/private/apple-cn-direct.yaml"
-    },
-    "appleComProxy": {
-        ...ruleProviderCommon,
-        "behavior": "domain",
-        "format": "yaml",
-        "url": `${cdnBase}/apple-com-proxy.yaml`,
-        "path": "./ruleset/private/apple-com-proxy.yaml"
-    },
-    // 7. 【你专属维护】私有国内直连白名单（公司业务、私有Git、内网开发）
     "directCustom": {
         ...ruleProviderCommon,
         "behavior": "classical",
@@ -124,43 +96,31 @@ const ruleProviders = {
     }
 };
 
-// 规则体系（优化漏斗：局域网/运维 -> STUN防泄露 -> AI与专属业务 -> 去广告 -> 私有直连 -> Apple海外 -> 国内放行 -> 全量断网兜底）
+// 个人覆盖先于社区规则；同一层级中自定义直连优先
 const rules = [
-    // 1. 【局域网与远程运维】内网直连与 VPS 专线运维 (37561/21389) 优先放行
+    // 局域网与 VPS 运维保留原策略
     "GEOIP,private,直连,no-resolve",
     "DST-PORT,37561,远程运维",
     "DST-PORT,21389,远程运维",
 
-    // 2. 【WebRTC / STUN 防穿透】置于直连规则之前，防止 stun.chat.bilibili.com 等国内 STUN 走直连泄露真实公网 IP
+    // STUN 保留现有住宅出口策略
     "DOMAIN-KEYWORD,stun,AI",
     "DST-PORT,3478,AI",
     "DST-PORT,5349,AI",
     "DST-PORT,19302,AI",
 
-    // 3. 【AI 大模型与专属自定义业务】置于去广告与国内规则之前，防止 Statsig/FeatureGates/Turnstile 探针被去广告误杀或被国内规则劫持
-    "RULE-SET,communityAi,AI",
-    "GEOSITE,category-ai-chat-!cn,AI",
-    "RULE-SET,ai,AI",
+    "RULE-SET,directCustom,直连",
     "RULE-SET,custom,AI",
+    "RULE-SET,ai,AI",
 
-    // 4. 【去广告防追踪】社区源 + 内置库双重拦截，拦截国内 App 开屏广告、网页广告与 Apple 广告追踪
     "RULE-SET,reject,REJECT",
     "GEOSITE,category-ads-all,REJECT",
 
-    // 5. 【私有直连与国区 Apple 白名单】置于 appleComProxy 之前，确保 time.apple.com 等精准走直连
-    "RULE-SET,appleCnDirect,直连",
-    "RULE-SET,directCustom,直连",
-    "GEOSITE,apple-cn,直连",
-
-    // 6. 【Apple 海外服务】先于国内通用 CN 库与 GEOIP,CN 匹配，防止 Anycast 节点被劫持直连
-    "RULE-SET,appleComProxy,AI",
-
-    // 7. 【国内通用直连白名单】社区 direct + 原生 CN 库
+    // Apple 等普通服务交给社区国内列表判断
     "RULE-SET,direct,直连",
     "GEOSITE,cn,直连",
     "GEOIP,CN,直连,no-resolve",
 
-    // 8. 【核心 Kill-Switch 防御】未被国内白名单命中的全量外网流量 100% 进住宅代理；住宅故障立即全网断死！
     "MATCH,AI"
 ];
 
@@ -254,10 +214,10 @@ function main(config) {
     dnsConfig["ipv6"] = false;
     config["dns"] = dnsConfig;
 
-    // AI 代理列表：包含按延迟优选排序的链式节点（脱敏留空时回退为 DIRECT）
+    // 未配置住宅节点时阻断该组，不自动退回直连；全局手动选择仍可用
     const aiProxyList = generatedChainProxies.length > 0
         ? generatedChainProxies.map(p => p.name)
-        : ["DIRECT"];
+        : ["REJECT"];
 
     // 仅保留美国优质专线节点（加州 VPS 运维专用，彻底过滤迪拜、巴西、欧洲、香港等无关高延时节点）
     const usProxies = cleanSubscriptionProxies.filter(p => {

@@ -1,4 +1,4 @@
-# Custom Rules — 同步自 windows-rules/custom.yaml
+# 自定义代理覆盖：在此维护，windows-rules/custom.yaml 由同步脚本生成
 # Policy assigned in apple.conf (HOME)
 
 # ===== 自定义服务与个人端点 =====

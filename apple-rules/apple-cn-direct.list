@@ -1,6 +1,0 @@
-# Apple CN Direct — 国区直连服务（App Store、系统更新 CDN、地图、天气、OCSP）
-DOMAIN-SUFFIX,apple.cn
-DOMAIN-SUFFIX,apple.com.cn
-DOMAIN-SUFFIX,appstore.cn
-DOMAIN-SUFFIX,icloud.com.cn
-DOMAIN-SUFFIX,cdn-apple.com

@@ -5,7 +5,6 @@
 *.ipr
 __pycache__
 /agent_env
-.ai-rules-cache/
 
 
 .obsidian/**

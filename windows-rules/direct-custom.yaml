@@ -1,60 +1,47 @@
 payload:
-  # ===== 1. 公司与私有基础设施（本地直连，不绕道海外住宅代理） =====
-  - DOMAIN-SUFFIX,verytrading.com
-  - DOMAIN-SUFFIX,hanghao.cc
-  - DOMAIN-SUFFIX,yirujs.com
-
-  # ===== 2. 金融支付与手机网银（防国外 IP 风控阻断、拒登） =====
-  - DOMAIN-SUFFIX,abchina.com
-  - DOMAIN-SUFFIX,ccb.com
-  - DOMAIN-SUFFIX,95516.com
-  - DOMAIN-SUFFIX,gsrcu.com
-  - DOMAIN-SUFFIX,jdpay.com
-  - DOMAIN-SUFFIX,wechatpay.cn
-
-  # ===== 3. 国内生活出行与高频 App 业务 =====
-  - DOMAIN-SUFFIX,hikparking.com
-  - DOMAIN-SUFFIX,dianping.com
-  - DOMAIN-SUFFIX,meituan.com
-  - DOMAIN-SUFFIX,meituan.net
-  - DOMAIN-SUFFIX,pinduoduo.com
-  - DOMAIN-SUFFIX,pddpic.com
-  - DOMAIN-SUFFIX,pddugc.com
-  - DOMAIN-SUFFIX,midea.com
-  - DOMAIN-SUFFIX,smartmidea.net
-  - DOMAIN-SUFFIX,qinlinkeji.com
-  - DOMAIN-SUFFIX,lkcoffee.com
-  - DOMAIN-SUFFIX,luckincoffeecdn.com
-  - DOMAIN-SUFFIX,bus365.com
-  - DOMAIN-SUFFIX,ys7.com
-  - DOMAIN-SUFFIX,moji.com
-  - DOMAIN-SUFFIX,doubao.com
-
-  # ===== 4. 国内底层通行认证与小程序网关 =====
-  - DOMAIN-SUFFIX,id6.me
-  - DOMAIN-SUFFIX,qq.com
-  - DOMAIN-SUFFIX,qcloud.com
-  - DOMAIN-SUFFIX,myqcloud.com
-  - DOMAIN-SUFFIX,tfogc.com
-  - DOMAIN-SUFFIX,weixinbridge.com
-  - DOMAIN-SUFFIX,servicewechat.com
-  - DOMAIN-SUFFIX,wxgateway.com
-
-  # ===== 5. 国内高频音视频流媒体与 P2P 穿透（防止误入不支持 UDP 的住宅代理） =====
-  - DOMAIN-SUFFIX,bilibili.com
-  - DOMAIN-SUFFIX,bilivideo.com
-  - DOMAIN-SUFFIX,bilivideo.cn
-  - DOMAIN-SUFFIX,hdslb.com
-  - DOMAIN-SUFFIX,biliapi.net
-  - DOMAIN-SUFFIX,biliapi.com
-  - DOMAIN-SUFFIX,netease.com
-  - DOMAIN-SUFFIX,163.com
-  - DOMAIN-SUFFIX,126.net
-
-  # ===== 6. 系统底层服务与高精度时钟校准 =====
-  - DOMAIN,time.apple.com
-
-  # ===== 7. 国内招投标与特定业务直连 =====
-  - DOMAIN-SUFFIX,xiquebiaoshu.com
-  - DOMAIN-SUFFIX,taitoubiao.com
-
+  # Generated from apple-rules/direct-custom.list; do not edit by hand.
+  - "DOMAIN-SUFFIX,verytrading.com"
+  - "DOMAIN-SUFFIX,hanghao.cc"
+  - "DOMAIN-SUFFIX,yirujs.com"
+  - "DOMAIN-SUFFIX,abchina.com"
+  - "DOMAIN-SUFFIX,ccb.com"
+  - "DOMAIN-SUFFIX,95516.com"
+  - "DOMAIN-SUFFIX,gsrcu.com"
+  - "DOMAIN-SUFFIX,jdpay.com"
+  - "DOMAIN-SUFFIX,wechatpay.cn"
+  - "DOMAIN-SUFFIX,hikparking.com"
+  - "DOMAIN-SUFFIX,dianping.com"
+  - "DOMAIN-SUFFIX,meituan.com"
+  - "DOMAIN-SUFFIX,meituan.net"
+  - "DOMAIN-SUFFIX,pinduoduo.com"
+  - "DOMAIN-SUFFIX,pddpic.com"
+  - "DOMAIN-SUFFIX,pddugc.com"
+  - "DOMAIN-SUFFIX,midea.com"
+  - "DOMAIN-SUFFIX,smartmidea.net"
+  - "DOMAIN-SUFFIX,qinlinkeji.com"
+  - "DOMAIN-SUFFIX,lkcoffee.com"
+  - "DOMAIN-SUFFIX,luckincoffeecdn.com"
+  - "DOMAIN-SUFFIX,bus365.com"
+  - "DOMAIN-SUFFIX,ys7.com"
+  - "DOMAIN-SUFFIX,moji.com"
+  - "DOMAIN-SUFFIX,doubao.com"
+  - "DOMAIN-SUFFIX,id6.me"
+  - "DOMAIN-SUFFIX,qq.com"
+  - "DOMAIN-SUFFIX,qcloud.com"
+  - "DOMAIN-SUFFIX,myqcloud.com"
+  - "DOMAIN-SUFFIX,tfogc.com"
+  - "DOMAIN-SUFFIX,weixinbridge.com"
+  - "DOMAIN-SUFFIX,servicewechat.com"
+  - "DOMAIN-SUFFIX,wxgateway.com"
+  - "DOMAIN-SUFFIX,bilibili.com"
+  - "DOMAIN-SUFFIX,bilivideo.com"
+  - "DOMAIN-SUFFIX,bilivideo.cn"
+  - "DOMAIN-SUFFIX,hdslb.com"
+  - "DOMAIN-SUFFIX,biliapi.net"
+  - "DOMAIN-SUFFIX,biliapi.com"
+  - "DOMAIN-SUFFIX,netease.com"
+  - "DOMAIN-SUFFIX,163.com"
+  - "DOMAIN-SUFFIX,126.net"
+  - "DOMAIN,time.apple.com"
+  - "DOMAIN-SUFFIX,xiquebiaoshu.com"
+  - "DOMAIN-SUFFIX,taitoubiao.com"
