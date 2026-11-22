@@ -139,5 +139,37 @@ class RuleMaintenanceTests(unittest.TestCase):
             sync.ensure_rules_published()
 
 
+    def test_credential_injection_handles_special_chars_and_repo_templates(self):
+        special_pw = r'a\1$b"c+=/'
+        apple_full = sync.inject_apple_conf_creds(
+            sync.APPLE_CONF_PATH.read_text("utf-8"),
+            "relay.example.com",
+            22465,
+            "2022-blake3-aes-256-gcm",
+            special_pw,
+        )
+        self.assertIn(f"serverA = ss, relay.example.com, 22465, encrypt-method=2022-blake3-aes-256-gcm, password={special_pw}, udp-relay=true", apple_full)
+        self.assertIn(f"serverC = ss, relay.example.com, 22465, encrypt-method=2022-blake3-aes-256-gcm, password={special_pw}, udp-relay=true", apple_full)
+
+        windows_full = sync.inject_windows_js_creds(
+            sync.WINDOWS_JS_PATH.read_text("utf-8"),
+            "relay.example.com",
+            22465,
+            "2022-blake3-aes-256-gcm",
+            special_pw,
+        )
+        server, port, cipher, password = sync.extract_creds_from_script_js(windows_full)
+        self.assertEqual(
+            (server, port, cipher, password),
+            ("relay.example.com", 22465, "2022-blake3-aes-256-gcm", special_pw),
+        )
+
+    def test_credential_injection_rejects_missing_placeholders(self):
+        with self.assertRaises(RuntimeError):
+            sync.inject_apple_conf_creds("[Proxy]\n", "s", 1, "c", "p")
+        with self.assertRaises(RuntimeError):
+            sync.inject_windows_js_creds("function main() {}", "s", 1, "c", "p")
+
+
 if __name__ == "__main__":
     unittest.main()

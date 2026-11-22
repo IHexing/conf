@@ -1,7 +1,7 @@
-// 国内DNS服务器（直连解析）
+// 国内DNS服务器（直连解析；IP 直连 DoH 避免启动时域名引导回环）
 const domesticNameservers = [
     "https://223.5.5.5/dns-query", // 阿里DoH
-    "https://doh.pub/dns-query" // 腾讯DoH
+    "https://1.12.12.12/dns-query" // 腾讯DNSPod DoH
 ];
 
 // 海外安全DNS服务器（代理与外网解析，防DNS污染及STUN/WebRTC国内解析穿透）
@@ -38,14 +38,20 @@ const dnsConfig = {
         "time.*.gov",
         "pool.ntp.org",
         // 微信快速登录检测失败
-        "localhost.work.weixin.qq.com"
+        "localhost.work.weixin.qq.com",
+        // 网易 UU 远程真实 IP 解析（避免 Fake-IP 影响 P2P 打洞）
+        "+.uuremote.com",
+        // VPS 中转域名真实 IP 解析（避免 SSH / Syncthing 拿到 Fake-IP）
+        "+.virvm.com"
     ],
     "default-nameserver": ["223.5.5.5", "119.29.29.29"],
     "direct-nameserver": [...domesticNameservers], // 必须：国内直连流量专用安全解析
     "nameserver": [...foreignNameservers],        // 默认及代理规则走海外安全解析，彻底防泄露
     "proxy-server-nameserver": [...domesticNameservers], // 代理节点自身域名解析（国内直连快速解析）
     "nameserver-policy": {
-        "geosite:private,cn": domesticNameservers
+        "geosite:private,cn": domesticNameservers,
+        "+.uuremote.com": domesticNameservers,
+        "+.virvm.com": domesticNameservers
     }
 };
 // 规则集通用配置
@@ -100,8 +106,17 @@ const ruleProviders = {
 const rules = [
     // 局域网与 VPS 运维保留原策略
     "GEOIP,private,直连,no-resolve",
+    // 网易 UU 远程全进程与域名强制 100% 直连（优先于 STUN 代理与兜底规则）
+    "PROCESS-NAME,UURemote,直连",
+    "PROCESS-NAME,UURemoteService,直连",
+    "PROCESS-NAME,UURemoteDaemon,直连",
+    "PROCESS-NAME,UURemoteHelper,直连",
+    "PROCESS-NAME,UURemoteUpdater,直连",
+    "DOMAIN-SUFFIX,uuremote.com,直连",
     "DST-PORT,37561,远程运维",
     "DST-PORT,21389,远程运维",
+    "DOMAIN,proxy.hanghao.cc,AI",
+    "DOMAIN-SUFFIX,hanghao.cc,直连",
 
     // STUN 保留现有住宅出口策略
     "DOMAIN-KEYWORD,stun,AI",
@@ -172,13 +187,22 @@ function main(config) {
         return true;
     };
 
+    // AI 链式前置仅筛选北美与东亚/亚太直连中转节点，剔除家宽与远途绕行节点，减轻单点住宅探测并发；若筛选为空则安全回退全量订阅节点
+    const isPreferredAiTransit = (proxy) => {
+        const name = String(proxy?.name ?? "");
+        if (/家宽|家庭宽带|住宅|倍率/i.test(name)) return false;
+        return /(?:美国|United\s*States|\bUS\b|🇺🇸|日本|Japan|\bJP\b|🇯🇵|香港|Hong\s*Kong|\bHK\b|🇭🇰|台湾|Taiwan|\bTW\b|🇹🇼|新加坡|Singapore|\bSG\b|🇸🇬|韩国|Korea|\bKR\b|🇰🇷|加拿大|Canada|\bCA\b|🇨🇦)/i.test(name);
+    };
+
     let generatedChainProxies = [];
     let cleanSubscriptionProxies = [];
     if (Array.isArray(config.proxies)) {
         cleanSubscriptionProxies = config.proxies.filter(isCleanSubscriptionProxy);
+        const preferredTransitProxies = cleanSubscriptionProxies.filter(isPreferredAiTransit);
+        const aiTransitProxies = preferredTransitProxies.length > 0 ? preferredTransitProxies : cleanSubscriptionProxies;
         if (hasValidServer) {
             generatedChainProxies = residentialEndpoints.flatMap(ep =>
-                cleanSubscriptionProxies.map(p => ({
+                aiTransitProxies.map(p => ({
                     "type": ep.type || "ss",
                     "server": ep.server,
                     "port": ep.port,
@@ -223,7 +247,7 @@ function main(config) {
     const usProxies = cleanSubscriptionProxies.filter(p => {
         if (!p || typeof p.name !== "string") return false;
         const name = p.name;
-        if (/家宽|住宅|倍率/i.test(name)) return false;
+        if (/家宽|家庭宽带|住宅|倍率/i.test(name)) return false;
         return /(?:美国|United\s*States|\bUS\b|🇺🇸)/i.test(name);
     });
 
@@ -238,10 +262,10 @@ function main(config) {
     usProxies.sort((a, b) => getOpsPriority(a.name) - getOpsPriority(b.name));
     const usProxyNames = usProxies.map(p => p.name);
 
-    // 远程运维候选列表：自动优选 + 直连 + 纯美西优质专线节点
+    // 远程运维候选列表：仅保留纯美西优质专线节点，直接由 url-test 自动测速优选（无美西节点时回退全部订阅节点或直连）
     const opsProxyList = usProxyNames.length > 0
-        ? ["自动优选", "直连", ...usProxyNames]
-        : (cleanSubscriptionProxies.length > 0 ? ["直连", ...cleanSubscriptionProxies.map(p => p.name)] : ["直连"]);
+        ? usProxyNames
+        : (cleanSubscriptionProxies.length > 0 ? cleanSubscriptionProxies.map(p => p.name) : ["DIRECT"]);
 
     // 覆盖原配置中的代理组
     const proxyGroups = [
@@ -264,35 +288,23 @@ function main(config) {
         {
             ...groupBaseOption,
             "name": "远程运维",
-            "type": "select",
-            "proxies": opsProxyList,
-            "include-all": false,
-            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
-        }
-    ];
-
-    // 若存在可用美国优质节点，提供专属“自动优选”测速组（动态自动切换至最低延迟美西专线）
-    if (usProxyNames.length > 0) {
-        proxyGroups.push({
-            ...groupBaseOption,
-            "name": "自动优选",
             "type": "url-test",
-            "proxies": usProxyNames,
+            "proxies": opsProxyList,
             "url": "https://www.google.com/generate_204",
             "interval": 300,
             "tolerance": 50,
-            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/speed.svg"
-        });
-    }
-
-    proxyGroups.push({
-        ...groupBaseOption,
-        "name": "直连",
-        "type": "select",
-        "proxies": ["DIRECT"],
-        "include-all": false,
-        "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg"
-    });
+            "include-all": false,
+            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
+        },
+        {
+            ...groupBaseOption,
+            "name": "直连",
+            "type": "select",
+            "proxies": ["DIRECT"],
+            "include-all": false,
+            "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/link.svg"
+        }
+    ];
 
     config["proxy-groups"] = proxyGroups;
 

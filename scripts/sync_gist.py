@@ -123,14 +123,52 @@ def get_github_token() -> str:
     raise RuntimeError("未在 git credential 中找到 GitHub Token")
 
 
+def inject_apple_conf_creds(apple_conf: str, server: str, port: int, cipher: str, password: str) -> str:
+    """向脱敏的 apple.conf 模板安全注入 serverA/B/C 静态住宅凭据。"""
+    ss_line = f"ss, {server}, {port}, encrypt-method={cipher}, password={password}, udp-relay=true"
+    replacement = f"serverA = {ss_line}\nserverB = {ss_line}\nserverC = {ss_line}"
+    updated, count = re.subn(
+        r"serverA\s*=[^\r\n]*\r?\nserverB\s*=[^\r\n]*\r?\nserverC\s*=[^\r\n]*",
+        lambda _: replacement,
+        apple_conf,
+        count=1,
+    )
+    if count != 1:
+        raise RuntimeError("未能在 apple.conf 中找到 serverA/serverB/serverC 占位行")
+    return updated
+
+
+def inject_windows_js_creds(windows_js: str, server: str, port: int, cipher: str, password: str) -> str:
+    """向脱敏的 windows.js 模板安全注入 residentialEndpoints 凭据。"""
+    updated, count = re.subn(
+        r'("server":\s*)"[^"]*",\s*\r?\n(\s*"port":\s*)\d+,\s*\r?\n(\s*"cipher":\s*)"[^"]*",\s*\r?\n(\s*"password":\s*)"[^"]*"',
+        lambda m: (
+            f'{m.group(1)}{json.dumps(server)},\n'
+            f'{m.group(2)}{port},\n'
+            f'{m.group(3)}{json.dumps(cipher)},\n'
+            f'{m.group(4)}{json.dumps(password)}'
+        ),
+        windows_js,
+        count=1,
+    )
+    if count != 1:
+        raise RuntimeError("未能在 windows.js 中找到 residentialEndpoints 凭据模板")
+    return updated
+
+
 def extract_creds_from_script_js(script_text: str) -> tuple[str, int, str, str]:
-    server = re.search(r'"server":\s*"([^"]+)"', script_text)
+    server = re.search(r'"server":\s*("(?:\\.|[^"\\])*")', script_text)
     port = re.search(r'"port":\s*(\d+)', script_text)
-    cipher = re.search(r'"cipher":\s*"([^"]+)"', script_text)
-    password = re.search(r'"password":\s*"([^"]+)"', script_text)
+    cipher = re.search(r'"cipher":\s*("(?:\\.|[^"\\])*")', script_text)
+    password = re.search(r'"password":\s*("(?:\\.|[^"\\])*")', script_text)
     if not (server and port and cipher and password):
         raise RuntimeError("未能从本地 Script.js 中提取完整的住宅代理凭据")
-    return server.group(1), int(port.group(1)), cipher.group(1), password.group(1)
+    s_val = json.loads(server.group(1))
+    c_val = json.loads(cipher.group(1))
+    p_val = json.loads(password.group(1))
+    if not (s_val and c_val and p_val):
+        raise RuntimeError("未能从本地 Script.js 中提取完整的住宅代理凭据")
+    return s_val, int(port.group(1)), c_val, p_val
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -154,19 +192,10 @@ def main(argv: list[str] | None = None) -> None:
     server, port, cipher, password = extract_creds_from_script_js(script_js)
 
     apple_conf = APPLE_CONF_PATH.read_text("utf-8")
-    ss_line = f"ss, {server}, {port}, encrypt-method={cipher}, password={password}, udp-relay=true"
-    apple_conf_full = re.sub(
-        r"serverA\s*=.*\nserverB\s*=.*\nserverC\s*=.*",
-        f"serverA = {ss_line}\nserverB = {ss_line}\nserverC = {ss_line}",
-        apple_conf,
-    )
+    apple_conf_full = inject_apple_conf_creds(apple_conf, server, port, cipher, password)
 
     windows_js = WINDOWS_JS_PATH.read_text("utf-8")
-    windows_js_full = re.sub(
-        r'("server":\s*)"[^"]*",\s*\n(\s*"port":\s*)\d+,\s*\n(\s*"cipher":\s*)"[^"]*",\s*\n(\s*"password":\s*)"[^"]*"',
-        rf'\g<1>"{server}",\n\g<2>{port},\n\g<3>"{cipher}",\n\g<4>"{password}"',
-        windows_js,
-    )
+    windows_js_full = inject_windows_js_creds(windows_js, server, port, cipher, password)
     if windows_js_full != script_js:
         SCRIPT_JS_PATH.write_text(windows_js_full, "utf-8")
 

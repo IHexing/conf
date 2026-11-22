@@ -5,6 +5,7 @@
 DOMAIN-SUFFIX,verytrading.com
 DOMAIN-SUFFIX,hanghao.cc
 DOMAIN-SUFFIX,yirujs.com
+DOMAIN-SUFFIX,uuremote.com
 
 # ===== 2. 金融支付与手机网银（防国外 IP 风控阻断、拒登） =====
 DOMAIN-SUFFIX,abchina.com
