@@ -141,11 +141,11 @@ const rules = [
 
 // 代理组通用配置
 const groupBaseOption = {
-    "interval": 300,
+    "interval": 180,
     "timeout": 5000,
-    "url": "https://www.google.com/generate_204",
+    "url": "https://www.gstatic.com/generate_204",
     "lazy": true,
-    "max-failed-times": 3,
+    "max-failed-times": 2,
     "hidden": false
 };
 
@@ -187,10 +187,13 @@ function main(config) {
         return true;
     };
 
-    // AI 链式前置仅筛选北美与东亚/亚太直连中转节点，剔除家宽与远途绕行节点，减轻单点住宅探测并发；若筛选为空则安全回退全量订阅节点
+    // 统一剔除不适合做稳定前置中转的节点（家宽/住宅/倍率节点与双 ISP 节点）
+    const isExcludedTransitName = (name) => /家宽|家庭宽带|住宅|倍率|双\s*ISP/i.test(name);
+
+    // AI 链式前置仅筛选北美与东亚/亚太原生/直连中转节点；若筛选为空则安全回退全量订阅节点
     const isPreferredAiTransit = (proxy) => {
         const name = String(proxy?.name ?? "");
-        if (/家宽|家庭宽带|住宅|倍率/i.test(name)) return false;
+        if (!name || isExcludedTransitName(name)) return false;
         return /(?:美国|United\s*States|\bUS\b|🇺🇸|日本|Japan|\bJP\b|🇯🇵|香港|Hong\s*Kong|\bHK\b|🇭🇰|台湾|Taiwan|\bTW\b|🇹🇼|新加坡|Singapore|\bSG\b|🇸🇬|韩国|Korea|\bKR\b|🇰🇷|加拿大|Canada|\bCA\b|🇨🇦)/i.test(name);
     };
 
@@ -214,16 +217,21 @@ function main(config) {
                 }))
             );
 
-            // 优先将低延迟的美西节点排在最前（首选 BGP-08、BGP-07 等优质节点）
+            // 按实测稳定性决定 AI 组 fallback 主备顺位：PPVPN 原生 IP (38② -> 152① -> 155①) 优先，并兼容 gw树洞
             const getProxyPriority = (name) => {
-                if (/美国-BGP-08/i.test(name)) return 1;
-                if (/美国-BGP-07/i.test(name)) return 2;
-                if (/美国-BGP-05/i.test(name)) return 3;
-                if (/美国-BGP/i.test(name)) return 4;
-                if (/美国/i.test(name)) return 5;
-                if (/香港|HK/i.test(name)) return 6;
-                if (/日本|JP/i.test(name)) return 7;
-                return 10;
+                if (/38\.114\.89\.209/.test(name)) return 1;
+                if (/152\.175\.118\.45/.test(name)) return 2;
+                if (/155\.103\.116\.185/.test(name)) return 3;
+                if (/原生\s*IP/i.test(name)) return 4;
+                if (/Pro-美国-BGP-07/i.test(name)) return 5;
+                if (/Basic-美国-BGP-09/i.test(name)) return 6;
+                if (/美国-BGP-08/i.test(name)) return 7;
+                if (/美国-BGP-05/i.test(name)) return 8;
+                if (/美国-BGP/i.test(name)) return 9;
+                if (/美国/i.test(name)) return 10;
+                if (/日本|JP/i.test(name)) return 11;
+                if (/香港|HK/i.test(name)) return 12;
+                return 20;
             };
             generatedChainProxies.sort((a, b) => getProxyPriority(a.name) - getProxyPriority(b.name));
 
@@ -243,26 +251,31 @@ function main(config) {
         ? generatedChainProxies.map(p => p.name)
         : ["REJECT"];
 
-    // 仅保留美国优质专线节点（加州 VPS 运维专用，彻底过滤迪拜、巴西、欧洲、香港等无关高延时节点）
+    // 仅保留美国原生/优质专线节点（加州 VPS 运维专用，剔除双 ISP 及高延迟非北美地区节点）
     const usProxies = cleanSubscriptionProxies.filter(p => {
-        if (!p || typeof p.name !== "string") return false;
-        const name = p.name;
-        if (/家宽|家庭宽带|住宅|倍率/i.test(name)) return false;
+        const name = String(p?.name ?? "");
+        if (!name || isExcludedTransitName(name)) return false;
         return /(?:美国|United\s*States|\bUS\b|🇺🇸)/i.test(name);
     });
 
-    // 智能排序：【优化】专线节点排最前（实测226ms），其次是 Pro-BGP、Basic-BGP
+    // 按实测稳定性决定远程运维 fallback 主备顺位：PPVPN 原生 IP (152① 抖动 3.1ms 最稳 -> 38② -> 155①)，并兼容 gw树洞
     const getOpsPriority = (name) => {
-        if (/优化/i.test(name)) return 1;
-        if (/Pro-美国-BGP/i.test(name)) return 2;
-        if (/Basic-美国-BGP/i.test(name)) return 3;
-        if (/BGP/i.test(name)) return 4;
-        return 10;
+        if (/152\.175\.118\.45/.test(name)) return 1;
+        if (/38\.114\.89\.209/.test(name)) return 2;
+        if (/155\.103\.116\.185/.test(name)) return 3;
+        if (/原生\s*IP/i.test(name)) return 4;
+        if (/Pro-美国-BGP-07/i.test(name)) return 5;
+        if (/Pro-美国-BGP/i.test(name)) return 6;
+        if (/Basic-美国-BGP-09/i.test(name)) return 7;
+        if (/Basic-美国-BGP/i.test(name)) return 8;
+        if (/优化/i.test(name)) return 9;
+        if (/BGP/i.test(name)) return 10;
+        return 20;
     };
     usProxies.sort((a, b) => getOpsPriority(a.name) - getOpsPriority(b.name));
     const usProxyNames = usProxies.map(p => p.name);
 
-    // 远程运维候选列表：仅保留纯美西优质专线节点，直接由 url-test 自动测速优选（无美西节点时回退全部订阅节点或直连）
+    // 远程运维候选列表：仅保留美国原生/专线节点，使用 fallback 主备锁定并在异常时自动故障转移
     const opsProxyList = usProxyNames.length > 0
         ? usProxyNames
         : (cleanSubscriptionProxies.length > 0 ? cleanSubscriptionProxies.map(p => p.name) : ["DIRECT"]);
@@ -279,8 +292,7 @@ function main(config) {
         {
             ...groupBaseOption,
             "name": "AI",
-            "type": "url-test",
-            "tolerance": 50,
+            "type": "fallback",
             "proxies": aiProxyList,
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/chatgpt.svg"
@@ -288,11 +300,10 @@ function main(config) {
         {
             ...groupBaseOption,
             "name": "远程运维",
-            "type": "url-test",
+            "type": "fallback",
             "proxies": opsProxyList,
-            "url": "https://www.google.com/generate_204",
-            "interval": 300,
-            "tolerance": 50,
+            "interval": 120,
+            "lazy": false,
             "include-all": false,
             "icon": "https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/microsoft.svg"
         },
